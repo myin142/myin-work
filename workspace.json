@@ -26,6 +26,7 @@
           },
           "configurations": {
             "production": {
+              "baseHref": "/myin-work/",
               "fileReplacements": [
                 {
                   "replace": "apps/work-tracker/src/environments/environment.ts",
