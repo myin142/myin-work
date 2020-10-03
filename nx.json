@@ -28,6 +28,15 @@
     "work-tracker-e2e": {
       "tags": [],
       "implicitDependencies": ["work-tracker"]
+    },
+    "cloud": {
+      "tags": []
+    },
+    "daily-time": {
+      "tags": []
+    },
+    "cloud-shared": {
+      "tags": []
     }
   }
 }

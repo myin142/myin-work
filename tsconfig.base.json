@@ -15,7 +15,10 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
-    "paths": {}
+    "paths": {
+      "@myin-work/daily-time": ["libs/daily-time/src/index.ts"],
+      "@myin-work/cloud-shared": ["libs/cloud-shared/src/index.ts"]
+    }
   },
   "exclude": ["node_modules", "tmp"]
 }
