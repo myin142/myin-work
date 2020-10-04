@@ -1,0 +1,27 @@
+{
+  "TableName": "WorkTracker",
+  "KeySchema": [
+    {
+      "AttributeName": "user",
+      "KeyType": "HASH"
+    },
+    {
+      "AttributeName": "timestamp",
+      "KeyType": "SORT"
+    }
+  ],
+  "AttributeDefinitions": [
+    {
+      "AttributeName": "user",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "timestamp",
+      "AttributeType": "N"
+    }
+  ],
+  "ProvisionedThroughput": {
+    "ReadCapacityUnits": 5,
+    "WriteCapacityUnits": 5
+  }
+}

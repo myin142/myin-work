@@ -28,9 +28,12 @@
   "private": true,
   "dependencies": {
     "@myin/auth-client": "0.0.2",
+    "@myin/utils": "0.0.4",
+    "axios": "^0.20.0",
     "document-register-element": "1.13.1",
     "react": "16.13.1",
-    "react-dom": "16.13.1"
+    "react-dom": "16.13.1",
+    "react-router-dom": "^5.2.0"
   },
   "devDependencies": {
     "@aws-cdk/assert": "^1.46.0",
@@ -43,7 +46,8 @@
     "@babel/preset-env": "7.9.6",
     "@babel/preset-react": "7.9.4",
     "@babel/preset-typescript": "7.9.0",
-    "@myin/aws-cdk": "0.0.6",
+    "@myin/aws-cdk": "0.0.7",
+    "@myin/aws-utils": "0.0.1",
     "@nrwl/cypress": "10.2.1",
     "@nrwl/eslint-plugin-nx": "10.2.1",
     "@nrwl/jest": "10.2.1",
@@ -51,12 +55,14 @@
     "@nrwl/web": "10.2.1",
     "@nrwl/workspace": "10.2.1",
     "@testing-library/react": "10.4.1",
+    "@types/aws-lambda": "^8.10.63",
     "@types/jest": "^26.0.8",
     "@types/node": "~8.9.4",
     "@types/react": "16.9.38",
     "@types/react-dom": "16.9.8",
     "@typescript-eslint/eslint-plugin": "2.19.2",
     "@typescript-eslint/parser": "2.19.2",
+    "aws-lambda": "^1.0.6",
     "babel-jest": "26.2.2",
     "cypress": "^4.1.0",
     "dotenv": "6.2.0",

@@ -10,15 +10,30 @@
     "importHelpers": true,
     "target": "es2015",
     "module": "esnext",
-    "typeRoots": ["node_modules/@types"],
-    "lib": ["es2017", "dom"],
+    "typeRoots": [
+      "node_modules/@types"
+    ],
+    "lib": [
+      "es2017",
+      "dom"
+    ],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@myin-work/daily-time": ["libs/daily-time/src/index.ts"],
-      "@myin-work/cloud-shared": ["libs/cloud-shared/src/index.ts"]
+      "@myin-work/daily-time": [
+        "libs/daily-time/src/index.ts"
+      ],
+      "@myin-work/cloud-shared": [
+        "libs/cloud-shared/src/index.ts"
+      ],
+      "@myin-work/work-time-client": [
+        "libs/work-time-client/src/index.ts"
+      ]
     }
   },
-  "exclude": ["node_modules", "tmp"]
+  "exclude": [
+    "node_modules",
+    "tmp"
+  ]
 }

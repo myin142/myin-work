@@ -1,0 +1,44 @@
+#!/bin/sh
+
+DYNAMO=http://localhost:8000
+ARG="$1"
+NEW=false
+BUILD=false
+STACK="work-tracker"
+
+while [ -n "$1" ]; do
+    case "$1" in
+        --new) NEW=true;;
+        --build) BUILD=true;;
+        *) STACK="$1";;
+    esac
+
+    shift
+done
+
+# Start and prepare dynamodb
+echo "Start Dynamo"
+
+if [ "$NEW" = true ]; then
+    docker-compose down
+fi
+
+docker-compose up --remove-orphans -d
+
+if [ "$NEW" = true ]; then
+    aws dynamodb create-table \
+        --cli-input-json file://scripts/work-time-table.json \
+        --endpoint-url "$DYNAMO" > /dev/null 2>&1
+fi
+
+# Running Applications
+cd apps/cloud
+
+if [ "$BUILD" = true ]; then
+    echo "Build Application"
+    # synth contains invalid outut when bundling
+    cdk synth --no-staging $STACK | sed -ne '/Resources:/,$p' > template.yml
+fi
+
+echo "Starting Application"
+sam local start-api --docker-network host

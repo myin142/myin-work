@@ -17,7 +17,12 @@
     "default": {
       "runner": "@nrwl/workspace/tasks-runners/default",
       "options": {
-        "cacheableOperations": ["build", "lint", "test", "e2e"]
+        "cacheableOperations": [
+          "build",
+          "lint",
+          "test",
+          "e2e"
+        ]
       }
     }
   },
@@ -27,7 +32,9 @@
     },
     "work-tracker-e2e": {
       "tags": [],
-      "implicitDependencies": ["work-tracker"]
+      "implicitDependencies": [
+        "work-tracker"
+      ]
     },
     "cloud": {
       "tags": []
@@ -36,6 +43,9 @@
       "tags": []
     },
     "cloud-shared": {
+      "tags": []
+    },
+    "work-time-client": {
       "tags": []
     }
   }

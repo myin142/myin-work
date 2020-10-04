@@ -15,15 +15,15 @@ export class AppStack extends cdk.Stack {
 	constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
 		super(scope, id, props);
 
-		const workTrackerTable = new Table(this, Dynamo.WorkTracker, {
-			tableName: Dynamo.WorkTracker,
+		const workTrackerTable = new Table(this, Dynamo.WorkTrackerTable, {
+			tableName: Dynamo.WorkTrackerTable,
 			partitionKey: {
-				name: 'user',
+				name: Dynamo.WorkTrackerUser,
 				type: AttributeType.STRING
 			},
 			sortKey: {
-				name: 'day',
-				type: AttributeType.STRING
+				name: Dynamo.WorkTrackerTimestamp,
+				type: AttributeType.NUMBER
 			},
 		});
 
@@ -47,14 +47,16 @@ export class AppStack extends cdk.Stack {
 
 		workTrackerTable.grantReadData(getTimesOfDay);
 
+		const defaultAuth = defaultCognito(api);
 		const timeResource = api.root.addResource('time');
-		timeResource.addMethod('GET', new LambdaIntegration(getTimesOfDay));
+		timeResource.addMethod('GET', new LambdaIntegration(getTimesOfDay), defaultAuth);
+		timeResource.addMethod('POST', new LambdaIntegration(getTimesOfDay), defaultAuth);
 	}
 }
 
 // Waiting https://github.com/aws/aws-cdk/issues/5618
-export const defaultCognito = (api: RestApi): MethodOptions => {
-	const authorizer = new CfnAuthorizer(api.stack, 'authorizer', {
+export const defaultCognito = (api: RestApi, id: string = ''): MethodOptions => {
+	const authorizer = new CfnAuthorizer(api.stack, `CognitoAuthorizer${id}`, {
 		restApiId: api.restApiId,
 		type: AuthorizationType.COGNITO,
 		name: 'MainPoolAuthorizer',
