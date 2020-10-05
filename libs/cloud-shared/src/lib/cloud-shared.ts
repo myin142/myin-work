@@ -5,8 +5,7 @@ export enum Dynamo {
 }
 
 export interface WorkTime {
-	user: string;
+	user?: string;
 	timestamp: number;
-	timeEnd: number;
-	comment: string;
+	comment?: string;
 }

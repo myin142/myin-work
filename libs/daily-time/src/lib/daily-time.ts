@@ -41,7 +41,7 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
 };
 
 function validWorkTime(workTime: WorkTime): boolean {
-	return !!workTime.user && !!workTime.timestamp && !!workTime.timeEnd;
+	return !!workTime.user && !!workTime.timestamp;
 }
 
 async function createWorkTime(workTime: WorkTime): Promise<void> {

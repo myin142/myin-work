@@ -20,9 +20,7 @@
               "apps/work-tracker/src/assets",
               "apps/work-tracker/src/404.html"
             ],
-            "styles": [
-              "apps/work-tracker/src/styles.scss"
-            ],
+            "styles": ["apps/work-tracker/src/styles.scss"],
             "scripts": [],
             "webpackConfig": "@nrwl/react/plugins/webpack"
           },
@@ -71,10 +69,7 @@
               "apps/work-tracker/tsconfig.app.json",
               "apps/work-tracker/tsconfig.spec.json"
             ],
-            "exclude": [
-              "**/node_modules/**",
-              "!apps/work-tracker/**/*"
-            ]
+            "exclude": ["**/node_modules/**", "!apps/work-tracker/**/*"]
           }
         },
         "test": {
@@ -108,13 +103,8 @@
           "builder": "@nrwl/linter:lint",
           "options": {
             "linter": "eslint",
-            "tsConfig": [
-              "apps/work-tracker-e2e/tsconfig.e2e.json"
-            ],
-            "exclude": [
-              "**/node_modules/**",
-              "!apps/work-tracker-e2e/**/*"
-            ]
+            "tsConfig": ["apps/work-tracker-e2e/tsconfig.e2e.json"],
+            "exclude": ["**/node_modules/**", "!apps/work-tracker-e2e/**/*"]
           }
         }
       }
@@ -169,10 +159,7 @@
               "libs/daily-time/tsconfig.lib.json",
               "libs/daily-time/tsconfig.spec.json"
             ],
-            "exclude": [
-              "**/node_modules/**",
-              "!libs/daily-time/**/*"
-            ]
+            "exclude": ["**/node_modules/**", "!libs/daily-time/**/*"]
           }
         },
         "test": {
@@ -206,10 +193,7 @@
               "libs/cloud-shared/tsconfig.lib.json",
               "libs/cloud-shared/tsconfig.spec.json"
             ],
-            "exclude": [
-              "**/node_modules/**",
-              "!libs/cloud-shared/**/*"
-            ]
+            "exclude": ["**/node_modules/**", "!libs/cloud-shared/**/*"]
           }
         },
         "test": {
@@ -235,16 +219,39 @@
               "libs/work-time-client/tsconfig.lib.json",
               "libs/work-time-client/tsconfig.spec.json"
             ],
-            "exclude": [
-              "**/node_modules/**",
-              "!libs/work-time-client/**/*"
-            ]
+            "exclude": ["**/node_modules/**", "!libs/work-time-client/**/*"]
           }
         },
         "test": {
           "builder": "@nrwl/jest:jest",
           "options": {
             "jestConfig": "libs/work-time-client/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "day-tracker": {
+      "root": "libs/day-tracker",
+      "sourceRoot": "libs/day-tracker/src",
+      "projectType": "library",
+      "schematics": {},
+      "architect": {
+        "lint": {
+          "builder": "@nrwl/linter:lint",
+          "options": {
+            "linter": "eslint",
+            "tsConfig": [
+              "libs/day-tracker/tsconfig.lib.json",
+              "libs/day-tracker/tsconfig.spec.json"
+            ],
+            "exclude": ["**/node_modules/**", "!libs/day-tracker/**/*"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "libs/day-tracker/jest.config.js",
             "passWithNoTests": true
           }
         }
