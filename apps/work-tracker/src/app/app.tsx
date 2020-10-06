@@ -9,7 +9,7 @@ import { WorkTimeClient } from '@myin-work/work-time-client';
 
 export const App = () => {
   const authClient = new AuthClient();
-  const workTimeClient = new WorkTimeClient();
+  const workTimeClient = new WorkTimeClient(authClient);
   if (environment.production) {
     authClient.redirectIfUnauthenticated();
   }

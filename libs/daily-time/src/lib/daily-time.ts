@@ -1,4 +1,4 @@
-import { getSubjectFromToken, dynamoWrapper, successAndBody, statusAndBody, toAWSAttributeMap } from '@myin/aws-utils';
+import { getSubjectFromToken, dynamoWrapper, successAndBody, statusAndBody, toAWSAttributeMap, fromAWSAttributeMapArray, dynamodb } from '@myin/aws-utils';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { Dynamo, WorkTime } from '../../../cloud-shared/src';
 
@@ -51,17 +51,13 @@ async function createWorkTime(workTime: WorkTime): Promise<void> {
 	}).promise();
 }
 
-async function getWorkTimes(user: string, date: Date): Promise<WorkTime[]> {
-	const nextDate = new Date(date);
-	nextDate.setDate(nextDate.getDate() + 1);
-
-	console.log(date.getTime());
+async function getWorkTimes(user: string, dateTime: Date): Promise<WorkTime[]> {
+	const date = dateTime.toISOString().split('T')[0];
 
 	return dynamoWrapper.query(Dynamo.WorkTrackerTable,
-		`${Dynamo.WorkTrackerUser} = :user, timestamp >= :currentDate, timestamp <= :nextDate`,
+		`${Dynamo.WorkTrackerUser} = :user, begins_with(${Dynamo.WorkTrackerTimestamp}, :timestamp)`,
 		{
 			user,
-			currentDate: date.getTime(),
-			nextDate: nextDate.getTime(),
+			timestamp: date,
 		});
 }

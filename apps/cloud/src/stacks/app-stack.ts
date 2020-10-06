@@ -1,7 +1,7 @@
 import * as cdk from '@aws-cdk/core';
 import { Table, AttributeType } from '@aws-cdk/aws-dynamodb';
 import { Dynamo } from '../../../../libs/cloud-shared/src';
-import { LambdaIntegration, MockIntegration } from '@aws-cdk/aws-apigateway';
+import { LambdaIntegration } from '@aws-cdk/aws-apigateway';
 import { Function, Runtime, Code } from '@aws-cdk/aws-lambda';
 import {
 	RestApi,
@@ -23,7 +23,7 @@ export class AppStack extends cdk.Stack {
 			},
 			sortKey: {
 				name: Dynamo.WorkTrackerTimestamp,
-				type: AttributeType.NUMBER
+				type: AttributeType.STRING,
 			},
 		});
 

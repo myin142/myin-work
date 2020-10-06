@@ -1,10 +1,11 @@
 import { WorkTime } from '@myin-work/cloud-shared';
+import { AuthClient } from '@myin/auth-client';
 import { ApiClient, Stage } from './api-client';
 
 export class WorkTimeClient extends ApiClient {
 
-	constructor() {
-		super({ baseURL: 'https://4qzzej7oka.execute-api.eu-central-1.amazonaws.com', });
+	constructor(authClient: AuthClient) {
+		super({ baseURL: 'https://skuq2nwqnj.execute-api.eu-central-1.amazonaws.com/', stage: Stage.PROD, tokenFn: () => authClient.getToken() });
 	}
 
 	public async getTimeOfDay(date = new Date()): Promise<WorkTime> {

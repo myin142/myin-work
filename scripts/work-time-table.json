@@ -17,7 +17,7 @@
     },
     {
       "AttributeName": "timestamp",
-      "AttributeType": "N"
+      "AttributeType": "S"
     }
   ],
   "ProvisionedThroughput": {

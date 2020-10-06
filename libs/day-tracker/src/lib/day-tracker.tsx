@@ -40,7 +40,7 @@ export class DayTracker extends React.Component<
       today.setMilliseconds(0);
 
       this.props.workTimeClient.createWorkTime({
-        timestamp: today.getTime(),
+        timestamp: today.toISOString(),
       });
     }
   }
