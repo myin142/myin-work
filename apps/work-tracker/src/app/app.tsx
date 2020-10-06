@@ -8,10 +8,10 @@ import './app.scss';
 import { WorkTimeClient } from '@myin-work/work-time-client';
 
 export const App = () => {
-  const authClient = new AuthClient();
+  const authClient = new AuthClient(true);
   const workTimeClient = new WorkTimeClient(authClient);
   if (environment.production) {
-    authClient.redirectIfUnauthenticated();
+    authClient.redirectIfUnauthenticated(true);
   }
 
   return (

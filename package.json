@@ -27,7 +27,7 @@
   },
   "private": true,
   "dependencies": {
-    "@myin/auth-client": "0.0.2",
+    "@myin/auth-client": "0.0.4",
     "@myin/utils": "0.0.4",
     "axios": "^0.20.0",
     "document-register-element": "1.13.1",
