@@ -14,12 +14,7 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
 					break;
 				}
 
-				const date = new Date(event.queryStringParameters.date);
-				if (!isValidDate(date)) {
-					error = `Invalid date query parameter: ${event.queryStringParameters.date}`;
-					break;
-				}
-
+				const date = event.queryStringParameters.date;
 				return successAndBody(await getWorkTimes(subject, date));
 			case 'POST':
 				const workTime: WorkTime = JSON.parse(event.body) || {};
@@ -31,7 +26,7 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
 				}
 
 				await createWorkTime(workTime);
-				return successAndBody('Work Time created');
+				return successAndBody({ msg: 'Work Time created' });
 		}
 	} catch (e) {
 		return statusAndBody(500, { error: `${e}` });
@@ -72,10 +67,8 @@ function isValidDate(date: Date): boolean {
 	return !isNaN(date.getTime());
 }
 
-async function getWorkTimes(user: string, dateTime: Date): Promise<WorkTime[]> {
-	const date = getDateFromDate(dateTime);
-
+async function getWorkTimes(user: string, dateStr: string): Promise<WorkTime[]> {
 	return dynamoWrapper.query(Dynamo.WorkTrackerTable,
 		`${Dynamo.WorkTrackerUser} = :u and begins_with(${Dynamo.WorkTrackerDate}, :d)`,
-		{ u: user, d: date, });
+		{ u: user, d: dateStr, });
 }
