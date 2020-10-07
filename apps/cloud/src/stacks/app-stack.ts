@@ -34,7 +34,7 @@ export class AppStack extends cdk.Stack {
 			},
 			defaultCorsPreflightOptions: {
 				allowOrigins: ['*'],
-				allowHeaders: ['Authorization'],
+				allowHeaders: ['Authorization', 'Content-Type'],
 				allowCredentials: true,
 			},
 		});

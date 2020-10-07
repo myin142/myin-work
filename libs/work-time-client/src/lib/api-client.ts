@@ -36,10 +36,7 @@ export class ApiClient {
 		// Interceptors too difficult to test
 		if (this.tokenFn && this.tokenFn()) {
 			if (!req.headers) req.headers = {};
-			// req.headers.Authorization = this.tokenFn();
-			console.log(req.headers);
-
-			req.headers = { Authorization: this.tokenFn() };
+			req.headers.Authorization = this.tokenFn();
 		}
 
 		const response = await axios.request(req);
