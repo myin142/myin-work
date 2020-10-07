@@ -1,11 +1,11 @@
 export enum Dynamo {
 	WorkTrackerTable = 'WorkTracker',
-	WorkTrackerUser = 'user',
-	WorkTrackerTimestamp = 'timestamp',
+	WorkTrackerUser = 'userId',
+	WorkTrackerDate = 'dayId',
 }
 
 export interface WorkTime {
-	user?: string;
-	timestamp: string;
+	userId?: string;
+	dayId: string;
 	comment?: string;
 }

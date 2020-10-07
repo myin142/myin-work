@@ -15,15 +15,15 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
 				}
 
 				const date = new Date(event.queryStringParameters.date);
-				if (isNaN(date.getTime())) {
+				if (!isValidDate(date)) {
 					error = `Invalid date query parameter: ${event.queryStringParameters.date}`;
 					break;
 				}
 
-				return successAndBody(getWorkTimes(subject, date));
+				return successAndBody(await getWorkTimes(subject, date));
 			case 'POST':
 				const workTime: WorkTime = JSON.parse(event.body) || {};
-				workTime.user = subject;
+				workTime.userId = subject;
 
 				if (!validWorkTime(workTime)) {
 					error = `Invalid work time data ${event.body}`;
@@ -41,23 +41,41 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
 };
 
 function validWorkTime(workTime: WorkTime): boolean {
-	return !!workTime.user && !!workTime.timestamp;
+	return !!workTime.userId && !!workTime.dayId;
 }
 
 async function createWorkTime(workTime: WorkTime): Promise<void> {
+	workTime.dayId = parseOnlyDate(workTime.dayId);
+
 	await dynamoWrapper.dynamo.putItem({
 		TableName: Dynamo.WorkTrackerTable,
 		Item: toAWSAttributeMap(workTime),
 	}).promise();
 }
 
+function parseOnlyDate(dateStr: string): string {
+	if (dateStr.indexOf('T') !== -1) {
+		const date = new Date(dateStr);
+		if (isValidDate(date)) {
+			return getDateFromDate(date);
+		}
+		return dateStr.split('T')[0];
+	}
+	return dateStr;
+}
+
+function getDateFromDate(date: Date): string {
+	return date.toISOString().split('T')[0];
+}
+
+function isValidDate(date: Date): boolean {
+	return !isNaN(date.getTime());
+}
+
 async function getWorkTimes(user: string, dateTime: Date): Promise<WorkTime[]> {
-	const date = dateTime.toISOString().split('T')[0];
+	const date = getDateFromDate(dateTime);
 
 	return dynamoWrapper.query(Dynamo.WorkTrackerTable,
-		`${Dynamo.WorkTrackerUser} = :user, begins_with(${Dynamo.WorkTrackerTimestamp}, :timestamp)`,
-		{
-			user,
-			timestamp: date,
-		});
+		`${Dynamo.WorkTrackerUser} = :u and begins_with(${Dynamo.WorkTrackerDate}, :d)`,
+		{ u: user, d: date, });
 }

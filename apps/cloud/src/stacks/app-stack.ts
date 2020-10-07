@@ -22,7 +22,7 @@ export class AppStack extends cdk.Stack {
 				type: AttributeType.STRING
 			},
 			sortKey: {
-				name: Dynamo.WorkTrackerTimestamp,
+				name: Dynamo.WorkTrackerDate,
 				type: AttributeType.STRING,
 			},
 		});
@@ -45,7 +45,7 @@ export class AppStack extends cdk.Stack {
 			handler: 'daily-time.handler',
 		});
 
-		workTrackerTable.grantReadData(getTimesOfDay);
+		workTrackerTable.grantReadWriteData(getTimesOfDay);
 
 		const defaultAuth = defaultCognito(api);
 		const timeResource = api.root.addResource('time');

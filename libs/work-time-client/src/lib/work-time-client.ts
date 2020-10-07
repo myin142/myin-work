@@ -5,7 +5,7 @@ import { ApiClient, Stage } from './api-client';
 export class WorkTimeClient extends ApiClient {
 
 	constructor(authClient: AuthClient) {
-		super({ baseURL: 'https://skuq2nwqnj.execute-api.eu-central-1.amazonaws.com/', stage: Stage.PROD, tokenFn: () => authClient.getToken() });
+		super({ baseURL: 'https://ba9tfikzda.execute-api.eu-central-1.amazonaws.com/', stage: Stage.PROD, tokenFn: () => authClient.getToken() });
 	}
 
 	public async getTimeOfDay(date = new Date()): Promise<WorkTime> {

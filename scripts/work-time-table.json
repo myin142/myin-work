@@ -2,21 +2,21 @@
   "TableName": "WorkTracker",
   "KeySchema": [
     {
-      "AttributeName": "user",
+      "AttributeName": "userId",
       "KeyType": "HASH"
     },
     {
-      "AttributeName": "timestamp",
+      "AttributeName": "dayId",
       "KeyType": "SORT"
     }
   ],
   "AttributeDefinitions": [
     {
-      "AttributeName": "user",
+      "AttributeName": "userId",
       "AttributeType": "S"
     },
     {
-      "AttributeName": "timestamp",
+      "AttributeName": "dayId",
       "AttributeType": "S"
     }
   ],
