@@ -7,5 +7,11 @@ export enum Dynamo {
 export interface WorkTime {
 	userId?: string;
 	dayId: string;
+	times: TimeSegment[];
+}
+
+export interface TimeSegment {
+	time: string;
+	name?: string;
 	comment?: string;
 }
