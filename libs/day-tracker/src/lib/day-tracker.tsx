@@ -19,6 +19,7 @@ export interface DayTrackerState {
   name: string;
   comment: string;
   times: TimeSegment[];
+  editIndex: number;
 }
 
 export class DayTracker extends React.Component<
@@ -32,39 +33,63 @@ export class DayTracker extends React.Component<
       name: '',
       comment: '',
       times: [],
+      editIndex: -1,
     };
   }
 
-  updateNewTime(ev: React.ChangeEvent<HTMLInputElement>) {
+  private updateNewTime(ev: React.ChangeEvent<HTMLInputElement>) {
     const value = ev.target.value;
     this.setState({ newTime: value });
   }
 
-  updateName(ev: React.ChangeEvent<HTMLInputElement>) {
+  private updateName(ev: React.ChangeEvent<HTMLInputElement>) {
     const value = ev.target.value;
     this.setState({ name: value });
   }
 
-  updateComment(ev: React.ChangeEvent<HTMLInputElement>) {
+  private updateComment(ev: React.ChangeEvent<HTMLInputElement>) {
     const value = ev.target.value;
     this.setState({ comment: value });
   }
 
-  addTime() {
+  private addTime() {
     if (this.state.newTime != null) {
-      const time: TimeSegment = {
-        time: this.state.newTime,
-        name: this.state.name,
-        comment: this.state.comment,
-      };
-      this.setState((s) => ({
-        ...s,
-        times: [...s.times, time],
-      }));
+      const time: TimeSegment = this.createTimeFromState();
+
+      if (this.state.editIndex !== -1) {
+        this.setState((s) => {
+          s.times[this.state.editIndex] = time;
+          return s;
+        });
+      } else {
+        this.setState((s) => ({
+          ...s,
+          times: [...s.times, time],
+        }));
+      }
+
+      this.clearTimeState();
     }
   }
 
-  saveTime() {
+  private createTimeFromState(): TimeSegment {
+    return {
+      time: this.state.newTime,
+      name: this.state.name,
+      comment: this.state.comment,
+    };
+  }
+
+  private clearTimeState(): void {
+    this.setState({
+      name: '',
+      newTime: '',
+      comment: '',
+      editIndex: -1,
+    });
+  }
+
+  private saveTime() {
     const today = new Date();
     this.props.workTimeClient.createWorkTime({
       dayId: today.toISOString(),
@@ -72,19 +97,49 @@ export class DayTracker extends React.Component<
     });
   }
 
+  private editTime({ time, comment, name }: TimeSegment, index: number) {
+    this.setState({
+      comment,
+      name,
+      newTime: time,
+      editIndex: index,
+    });
+  }
+
   render() {
     return (
       <Box display="flex" flexDirection="row">
-        <DayTimeline timeSegments={this.state.times} />
+        <DayTimeline
+          timeSegments={this.state.times}
+          editTimeline={this.editTime.bind(this)}
+        />
         <Box display="flex" flexDirection="column">
-          <TextField type="time" onChange={this.updateNewTime.bind(this)} />
-          <TextField onChange={this.updateName.bind(this)} />
-          <TextField onChange={this.updateComment.bind(this)} />
-          <div>
+          <TextField
+            type="time"
+            value={this.state.newTime}
+            onChange={this.updateNewTime.bind(this)}
+          />
+          <TextField
+            value={this.state.name}
+            onChange={this.updateName.bind(this)}
+          />
+          <TextField
+            value={this.state.comment}
+            onChange={this.updateComment.bind(this)}
+          />
+          <Box display="flex" flexDirection="row">
             <IconButton color="primary" onClick={this.addTime.bind(this)}>
-              <Icon>add</Icon>
+              <Icon>{this.state.editIndex === -1 ? 'add' : 'save'}</Icon>
             </IconButton>
-          </div>
+            {this.state.editIndex !== -1 && (
+              <IconButton
+                color="primary"
+                onClick={this.clearTimeState.bind(this)}
+              >
+                <Icon>clear</Icon>
+              </IconButton>
+            )}
+          </Box>
           <Button
             variant="contained"
             color="primary"
