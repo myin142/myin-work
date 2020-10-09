@@ -10,7 +10,6 @@ import TextField from '@material-ui/core/TextField';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 
-/* eslint-disable-next-line */
 export interface DayTrackerProps {
   workTimeClient: WorkTimeClient;
 }
@@ -53,7 +52,9 @@ export class DayTracker extends React.Component<
   }
 
   private addTime() {
-    if (this.state.newTime != null) {
+    if (this.state.newTime !== '') {
+      console.log(this.state.newTime);
+
       const time: TimeSegment = this.createTimeFromState();
 
       if (this.state.editIndex !== -1) {
@@ -106,6 +107,13 @@ export class DayTracker extends React.Component<
     });
   }
 
+  private deleteTime() {
+    this.setState((s) => ({
+      times: s.times.filter((v, i) => i !== this.state.editIndex),
+    }));
+    this.clearTimeState();
+  }
+
   render() {
     return (
       <Box display="flex" flexDirection="row">
@@ -113,7 +121,7 @@ export class DayTracker extends React.Component<
           timeSegments={this.state.times}
           editTimeline={this.editTime.bind(this)}
         />
-        <Box display="flex" flexDirection="column">
+        <Box display="flex" flexDirection="column" flexGrow="1">
           <TextField
             type="time"
             value={this.state.newTime}
@@ -132,12 +140,20 @@ export class DayTracker extends React.Component<
               <Icon>{this.state.editIndex === -1 ? 'add' : 'save'}</Icon>
             </IconButton>
             {this.state.editIndex !== -1 && (
-              <IconButton
-                color="primary"
-                onClick={this.clearTimeState.bind(this)}
-              >
-                <Icon>clear</Icon>
-              </IconButton>
+              <>
+                <IconButton
+                  color="primary"
+                  onClick={this.clearTimeState.bind(this)}
+                >
+                  <Icon>clear</Icon>
+                </IconButton>
+                <IconButton
+                  color="primary"
+                  onClick={this.deleteTime.bind(this)}
+                >
+                  <Icon>delete</Icon>
+                </IconButton>
+              </>
             )}
           </Box>
           <Button

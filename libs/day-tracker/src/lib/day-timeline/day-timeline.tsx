@@ -19,8 +19,8 @@ export interface DayTimelineProps {
 export class DayTimeline extends React.Component<DayTimelineProps> {
   private createTimelineItem(time: TimeSegment, index: number) {
     return (
-      <div onClick={(e) => this.props.editTimeline(time, index)}>
-        <TimelineItem key={index}>
+      <div onClick={(e) => this.props.editTimeline(time, index)} key={index}>
+        <TimelineItem>
           <TimelineOppositeContent>{time.time}</TimelineOppositeContent>
           <TimelineSeparator>
             <TimelineDot />
