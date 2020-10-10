@@ -9,6 +9,8 @@ import Icon from '@material-ui/core/Icon';
 import TextField from '@material-ui/core/TextField';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
+import DaySummary from './day-summary/day-summary';
+import { DateTime } from 'luxon';
 
 export interface DayTrackerProps {
   workTimeClient: WorkTimeClient;
@@ -36,6 +38,23 @@ export class DayTracker extends React.Component<
     };
   }
 
+  async componentDidMount() {
+    const workTime = await this.props.workTimeClient.getTimeOfDay();
+    if (workTime && workTime.length > 0) {
+      this.setState({
+        times: this.sortTimes(workTime[0].times || []),
+      });
+    }
+  }
+
+  private sortTimes(times: TimeSegment[]): TimeSegment[] {
+    return times.sort(
+      (a, b) =>
+        DateTime.fromISO(a.time).toMillis() -
+        DateTime.fromISO(b.time).toMillis()
+    );
+  }
+
   private updateNewTime(ev: React.ChangeEvent<HTMLInputElement>) {
     const value = ev.target.value;
     this.setState({ newTime: value });
@@ -53,19 +72,20 @@ export class DayTracker extends React.Component<
 
   private addTime() {
     if (this.state.newTime !== '') {
-      console.log(this.state.newTime);
-
       const time: TimeSegment = this.createTimeFromState();
 
       if (this.state.editIndex !== -1) {
         this.setState((s) => {
           s.times[this.state.editIndex] = time;
-          return s;
+          return {
+            ...s,
+            times: this.sortTimes(s.times),
+          };
         });
       } else {
         this.setState((s) => ({
           ...s,
-          times: [...s.times, time],
+          times: this.sortTimes([...s.times, time]),
         }));
       }
 
@@ -121,6 +141,7 @@ export class DayTracker extends React.Component<
           timeSegments={this.state.times}
           editTimeline={this.editTime.bind(this)}
         />
+        <DaySummary timeSegments={this.state.times} />
         <Box display="flex" flexDirection="column" flexGrow="1">
           <TextField
             type="time"

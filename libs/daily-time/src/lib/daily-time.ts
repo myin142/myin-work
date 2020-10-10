@@ -54,7 +54,6 @@ function parseOnlyDate(dateStr: string): string {
 		if (isValidDate(date)) {
 			return getDateFromDate(date);
 		}
-		return dateStr.split('T')[0];
 	}
 	return dateStr;
 }
@@ -70,5 +69,5 @@ function isValidDate(date: Date): boolean {
 async function getWorkTimes(user: string, dateStr: string): Promise<WorkTime[]> {
 	return dynamoWrapper.query(Dynamo.WorkTrackerTable,
 		`${Dynamo.WorkTrackerUser} = :u and begins_with(${Dynamo.WorkTrackerDate}, :d)`,
-		{ u: user, d: dateStr, });
+		{ u: user, d: parseOnlyDate(dateStr), });
 }
