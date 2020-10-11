@@ -10,7 +10,8 @@ import TextField from '@material-ui/core/TextField';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import DaySummary from './day-summary/day-summary';
-import { DateTime } from 'luxon';
+import { DateTime, Duration } from 'luxon';
+import { Typography } from '@material-ui/core';
 
 export interface DayTrackerProps {
   workTimeClient: WorkTimeClient;
@@ -21,6 +22,7 @@ export interface DayTrackerState {
   comment: string;
   times: TimeSegment[];
   editIndex: number;
+  date: Date;
 }
 
 export class DayTracker extends React.Component<
@@ -35,16 +37,41 @@ export class DayTracker extends React.Component<
       comment: '',
       times: [],
       editIndex: -1,
+      date: new Date(),
     };
   }
 
   async componentDidMount() {
-    const workTime = await this.props.workTimeClient.getTimeOfDay();
+    this.reloadTimes();
+  }
+
+  private async reloadTimes(date = this.state.date) {
+    const workTime = await this.props.workTimeClient.getTimeOfDay(date);
     if (workTime && workTime.length > 0) {
       this.setState({
         times: this.sortTimes(workTime[0].times || []),
       });
+    } else {
+      this.setState({
+        times: [],
+      });
     }
+  }
+
+  private nextDate() {
+    const date = this.state.date;
+    date.setDate(date.getDate() + 1);
+    this.reloadTimes(date);
+
+    this.setState({ date });
+  }
+
+  private previousDate() {
+    const date = this.state.date;
+    date.setDate(date.getDate() - 1);
+    this.reloadTimes(date);
+
+    this.setState({ date });
   }
 
   private sortTimes(times: TimeSegment[]): TimeSegment[] {
@@ -137,10 +164,19 @@ export class DayTracker extends React.Component<
   render() {
     return (
       <Box display="flex" flexDirection="row">
-        <DayTimeline
-          timeSegments={this.state.times}
-          editTimeline={this.editTime.bind(this)}
-        />
+        <Box display="flex" flexDirection="column">
+          <Box display="flex" flexDirection="row">
+            <Button onClick={this.previousDate.bind(this)}>Previous Day</Button>
+            <Button disabled={true}>
+              {this.state.date.toLocaleDateString()}
+            </Button>
+            <Button onClick={this.nextDate.bind(this)}>Next Day</Button>
+          </Box>
+          <DayTimeline
+            timeSegments={this.state.times}
+            editTimeline={this.editTime.bind(this)}
+          />
+        </Box>
         <DaySummary timeSegments={this.state.times} />
         <Box display="flex" flexDirection="column" flexGrow="1">
           <TextField
