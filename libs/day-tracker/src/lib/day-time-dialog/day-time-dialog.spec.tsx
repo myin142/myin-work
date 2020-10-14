@@ -1,11 +1,11 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 
-import DayTimeline from './day-timeline';
+import DayTimeDialog from './day-time-dialog';
 
-describe('DayTimeline', () => {
+describe('DayTimeDialog', () => {
   it('should render successfully', () => {
-    const { baseElement } = render(<DayTimeline />);
+    const { baseElement } = render(<DayTimeDialog />);
     expect(baseElement).toBeTruthy();
   });
 });

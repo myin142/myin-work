@@ -27,6 +27,9 @@
   },
   "private": true,
   "dependencies": {
+    "@fullcalendar/interaction": "^5.3.1",
+    "@fullcalendar/react": "^5.3.1",
+    "@fullcalendar/timegrid": "^5.3.1",
     "@material-ui/core": "^4.11.0",
     "@material-ui/lab": "^4.0.0-alpha.56",
     "@material-ui/pickers": "^3.2.10",

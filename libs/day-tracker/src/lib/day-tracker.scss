@@ -1,0 +1,9 @@
+.calendar {
+  padding: 1em;
+  display: flex;
+  height: 100%;
+}
+
+.calendar > * {
+  flex-grow: 1;
+}

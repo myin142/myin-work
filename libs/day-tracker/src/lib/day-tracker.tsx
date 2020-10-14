@@ -1,140 +1,155 @@
-import React from 'react';
 import { WorkTimeClient } from '@myin-work/work-time-client';
+import { DateTime } from 'luxon';
+import React, { RefObject } from 'react';
+import FullCalendar, {
+  CalendarApi,
+  DateSelectArg,
+  DatesSetArg,
+  EventApi,
+  EventClickArg,
+  EventInput,
+} from '@fullcalendar/react';
+import timeGridPlugin from '@fullcalendar/timegrid';
+import interactionPlugin from '@fullcalendar/interaction';
 
 import './day-tracker.scss';
 import { TimeSegment } from '@myin-work/cloud-shared';
-import { DayTimeline } from './day-timeline/day-timeline';
-import IconButton from '@material-ui/core/IconButton';
-import Icon from '@material-ui/core/Icon';
-import TextField from '@material-ui/core/TextField';
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import DaySummary from './day-summary/day-summary';
-import { DateTime, Duration } from 'luxon';
-import { Typography } from '@material-ui/core';
+import DayTimeDialog from './day-time-dialog/day-time-dialog';
 
 export interface DayTrackerProps {
   workTimeClient: WorkTimeClient;
 }
 export interface DayTrackerState {
-  newTime: string;
-  name: string;
-  comment: string;
+  selectedTimeId: string;
+  selectedTime: TimeSegment;
   times: TimeSegment[];
-  editIndex: number;
-  date: Date;
 }
 
 export class DayTracker extends React.Component<
   DayTrackerProps,
   DayTrackerState
 > {
+  private calendarRef: RefObject<FullCalendar> = React.createRef();
+
   constructor(props: DayTrackerProps) {
     super(props);
     this.state = {
-      newTime: '',
-      name: '',
-      comment: '',
+      selectedTimeId: null,
+      selectedTime: null,
       times: [],
-      editIndex: -1,
-      date: new Date(),
     };
   }
 
-  async componentDidMount() {
-    this.reloadTimes();
+  private get calendar(): CalendarApi {
+    return this.calendarRef.current.getApi();
   }
 
-  private async reloadTimes(date = this.state.date) {
-    const workTime = await this.props.workTimeClient.getTimeOfDay(date);
-    if (workTime && workTime.length > 0) {
-      this.setState({
-        times: this.sortTimes(workTime[0].times || []),
-      });
-    } else {
-      this.setState({
-        times: [],
-      });
-    }
+  private handleDateSet(e: DatesSetArg) {
+    this.reloadTimesForDay(DateTime.fromJSDate(e.start).toISODate());
   }
 
-  private nextDate() {
-    const date = this.state.date;
-    date.setDate(date.getDate() + 1);
-    this.reloadTimes(date);
-
-    this.setState({ date });
-  }
-
-  private previousDate() {
-    const date = this.state.date;
-    date.setDate(date.getDate() - 1);
-    this.reloadTimes(date);
-
-    this.setState({ date });
-  }
-
-  private sortTimes(times: TimeSegment[]): TimeSegment[] {
-    return times.sort(
-      (a, b) =>
-        DateTime.fromISO(a.time).toMillis() -
-        DateTime.fromISO(b.time).toMillis()
-    );
-  }
-
-  private updateNewTime(ev: React.ChangeEvent<HTMLInputElement>) {
-    const value = ev.target.value;
-    this.setState({ newTime: value });
-  }
-
-  private updateName(ev: React.ChangeEvent<HTMLInputElement>) {
-    const value = ev.target.value;
-    this.setState({ name: value });
-  }
-
-  private updateComment(ev: React.ChangeEvent<HTMLInputElement>) {
-    const value = ev.target.value;
-    this.setState({ comment: value });
-  }
-
-  private addTime() {
-    if (this.state.newTime !== '') {
-      const time: TimeSegment = this.createTimeFromState();
-
-      if (this.state.editIndex !== -1) {
-        this.setState((s) => {
-          s.times[this.state.editIndex] = time;
-          return {
-            ...s,
-            times: this.sortTimes(s.times),
-          };
-        });
-      } else {
-        this.setState((s) => ({
-          ...s,
-          times: this.sortTimes([...s.times, time]),
-        }));
-      }
-
-      this.clearTimeState();
-    }
-  }
-
-  private createTimeFromState(): TimeSegment {
-    return {
-      time: this.state.newTime,
-      name: this.state.name,
-      comment: this.state.comment,
-    };
-  }
-
-  private clearTimeState(): void {
-    this.setState({
-      name: '',
-      newTime: '',
-      comment: '',
-      editIndex: -1,
+  private reloadTimesForDay(day: string) {
+    this.calendarSource(day).then((ev) => {
+      this.calendar.removeAllEvents();
+      ev.forEach((e) => this.calendar.addEvent(e));
     });
+  }
+
+  private async calendarSource(day: string): Promise<EventInput[]> {
+    const times = await this.fetchTimesForDate(day);
+    return times.map((t, i) => ({
+      id: `${i}`,
+      ...this.toCalendarEvent(t),
+    }));
+  }
+
+  private async fetchTimesForDate(date: string): Promise<TimeSegment[]> {
+    try {
+      const workTime = await this.props.workTimeClient.getTimeOfDay(date);
+      if (workTime && workTime.length > 0) {
+        return workTime[0].times;
+      }
+    } catch (e) {}
+    return [];
+  }
+
+  private toTimeString(date: Date): string {
+    if (date == null) return '';
+    return DateTime.fromJSDate(date).toFormat('HH:mm');
+  }
+
+  private fromTimeString(time: string): Date {
+    if (time == null) return null;
+    return DateTime.fromFormat(time, 'HH:mm').toJSDate();
+  }
+
+  private toCalendarEvent(time: TimeSegment): EventInput {
+    return {
+      start: this.fromTimeString(time.start),
+      end: this.fromTimeString(time.end),
+      title: time.name,
+    };
+  }
+
+  private fromCalendarEvent(ev: EventApi): TimeSegment {
+    return {
+      start: this.toTimeString(ev.start),
+      end: this.toTimeString(ev.end),
+      name: ev.title,
+    };
+  }
+
+  private handleDateSelect(selectInfo: DateSelectArg) {
+    this.setState({
+      selectedTime: {
+        start: this.toTimeString(selectInfo.start),
+      },
+    });
+  }
+
+  private handleEventClick(ev: EventClickArg) {
+    console.log(ev);
+    this.setState({
+      selectedTimeId: ev.event.id,
+      selectedTime: this.fromCalendarEvent(ev.event),
+    });
+  }
+
+  private handleEvents(ev: EventApi[]) {
+    this.setState({
+      times: ev.map((e) => this.fromCalendarEvent(e)),
+    });
+  }
+
+  private onDialogClose(time: TimeSegment) {
+    this.addTime(time);
+    this.editTime(time);
+
+    this.calendarRef.current.getApi().unselect();
+    this.setState({
+      selectedTimeId: null,
+      selectedTime: null,
+    });
+  }
+
+  private addTime(time: TimeSegment) {
+    if (time == null || this.state.selectedTimeId != null) return;
+    const cal: CalendarApi = this.calendarRef.current.getApi();
+    cal.addEvent({
+      id: `${this.state.times.length}`,
+      ...this.toCalendarEvent(time),
+    });
+  }
+
+  private editTime(time: TimeSegment) {
+    if (time == null || this.state.selectedTimeId == null) return;
+    this.getSelectedEvent().setProp('title', time.name);
+  }
+
+  private deleteTime() {
+    if (this.state.selectedTimeId != null) {
+      this.getSelectedEvent().remove();
+    }
   }
 
   private saveTime() {
@@ -145,83 +160,48 @@ export class DayTracker extends React.Component<
     });
   }
 
-  private editTime({ time, comment, name }: TimeSegment, index: number) {
-    this.setState({
-      comment,
-      name,
-      newTime: time,
-      editIndex: index,
-    });
-  }
-
-  private deleteTime() {
-    this.setState((s) => ({
-      times: s.times.filter((v, i) => i !== this.state.editIndex),
-    }));
-    this.clearTimeState();
+  private getSelectedEvent(): EventApi {
+    const cal: CalendarApi = this.calendarRef.current.getApi();
+    return cal.getEventById(this.state.selectedTimeId);
   }
 
   render() {
     return (
-      <Box display="flex" flexDirection="row">
-        <Box display="flex" flexDirection="column">
-          <Box display="flex" flexDirection="row">
-            <Button onClick={this.previousDate.bind(this)}>Previous Day</Button>
-            <Button disabled={true}>
-              {this.state.date.toLocaleDateString()}
-            </Button>
-            <Button onClick={this.nextDate.bind(this)}>Next Day</Button>
-          </Box>
-          <DayTimeline
-            timeSegments={this.state.times}
-            editTimeline={this.editTime.bind(this)}
-          />
-        </Box>
-        <DaySummary timeSegments={this.state.times} />
-        <Box display="flex" flexDirection="column" flexGrow="1">
-          <TextField
-            type="time"
-            value={this.state.newTime}
-            onChange={this.updateNewTime.bind(this)}
-          />
-          <TextField
-            value={this.state.name}
-            onChange={this.updateName.bind(this)}
-          />
-          <TextField
-            value={this.state.comment}
-            onChange={this.updateComment.bind(this)}
-          />
-          <Box display="flex" flexDirection="row">
-            <IconButton color="primary" onClick={this.addTime.bind(this)}>
-              <Icon>{this.state.editIndex === -1 ? 'add' : 'save'}</Icon>
-            </IconButton>
-            {this.state.editIndex !== -1 && (
-              <>
-                <IconButton
-                  color="primary"
-                  onClick={this.clearTimeState.bind(this)}
-                >
-                  <Icon>clear</Icon>
-                </IconButton>
-                <IconButton
-                  color="primary"
-                  onClick={this.deleteTime.bind(this)}
-                >
-                  <Icon>delete</Icon>
-                </IconButton>
-              </>
-            )}
-          </Box>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={this.saveTime.bind(this)}
-          >
-            Save
-          </Button>
-        </Box>
-      </Box>
+      <div className="calendar">
+        <FullCalendar
+          ref={this.calendarRef}
+          plugins={[timeGridPlugin, interactionPlugin]}
+          customButtons={{
+            save: {
+              text: 'Save',
+              click: () => this.saveTime(),
+            },
+          }}
+          headerToolbar={{
+            left: 'prev,next today',
+            center: 'title',
+            right: 'timeGridWeek,timeGridDay',
+          }}
+          footerToolbar={{
+            left: 'save',
+          }}
+          initialView="timeGridDay"
+          editable={true}
+          selectable={true}
+          allDaySlot={false}
+          weekends={false}
+          select={this.handleDateSelect.bind(this)}
+          eventsSet={this.handleEvents.bind(this)}
+          eventClick={this.handleEventClick.bind(this)}
+          datesSet={this.handleDateSet.bind(this)}
+        />
+        <DayTimeDialog
+          time={this.state.selectedTime}
+          edit={this.state.selectedTimeId != null}
+          onDelete={this.deleteTime.bind(this)}
+          onDialogClose={this.onDialogClose.bind(this)}
+        />
+      </div>
     );
   }
 }

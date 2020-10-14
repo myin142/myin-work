@@ -17,8 +17,8 @@ export const DaySummary = (props: DaySummaryProps) => {
     const time = props.timeSegments[i];
     const nextTime = props.timeSegments[i + 1];
 
-    const date = DateTime.fromISO(time.time);
-    const nextDate = DateTime.fromISO(nextTime.time);
+    const date = DateTime.fromISO(time.start);
+    const nextDate = DateTime.fromISO(nextTime.start);
 
     const duration = nextDate.diff(date);
 

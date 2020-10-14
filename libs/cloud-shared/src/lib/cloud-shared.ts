@@ -11,7 +11,8 @@ export interface WorkTime {
 }
 
 export interface TimeSegment {
-	time: string;
+	start: string;
+	end?: string;
 	name?: string;
 	comment?: string;
 }

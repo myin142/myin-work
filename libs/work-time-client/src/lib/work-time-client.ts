@@ -11,8 +11,8 @@ export class WorkTimeClient extends ApiClient {
 		});
 	}
 
-	public async getTimeOfDay(date = new Date()): Promise<WorkTime[]> {
-		return this.get(`/time?date=${date.toISOString()}`);
+	public async getTimeOfDay(date: string): Promise<WorkTime[]> {
+		return this.get(`/time?date=${date}`);
 	}
 
 	public async createWorkTime(workTime: WorkTime): Promise<WorkTime> {
