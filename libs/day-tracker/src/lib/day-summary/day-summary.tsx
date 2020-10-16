@@ -1,26 +1,63 @@
-import { List, ListItem, ListItemText } from '@material-ui/core';
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  List,
+  ListItem,
+  ListItemText,
+} from '@material-ui/core';
 import { TimeSegment } from '@myin-work/cloud-shared';
 import React from 'react';
-import { DateTime, Duration } from 'luxon';
-
+import { DateTime, Duration, Interval } from 'luxon';
 import './day-summary.scss';
 
 export interface DaySummaryProps {
   timeSegments: TimeSegment[];
+  show: boolean;
+  onClose: () => void;
+}
+
+function findOverlappingIntersections(
+  time: TimeSegment,
+  times: TimeSegment[]
+): Interval[] {
+  const interval = getInterval(time);
+  return times
+    .filter((t) => t.name !== time.name)
+    .map((t) => getInterval(t))
+    .filter((i) => i.isAfter(interval.start))
+    .map((i) => interval.intersection(i))
+    .filter((i) => !!i);
+}
+
+function getInterval(time: TimeSegment): Interval {
+  const start = DateTime.fromISO(time.start);
+  const end = getEndDate(time);
+  return Interval.fromDateTimes(start, end);
+}
+
+function getDuration(time: TimeSegment): Duration {
+  const date = DateTime.fromISO(time.start);
+  const endDate = getEndDate(time);
+  return endDate.diff(date);
+}
+
+function getEndDate(time: TimeSegment): DateTime {
+  const date = DateTime.fromISO(time.start);
+  return time.end
+    ? DateTime.fromISO(time.end)
+    : date.plus(Duration.fromObject({ hours: 1 }));
 }
 
 export const DaySummary = (props: DaySummaryProps) => {
   const summary: { [k: string]: Duration } = {};
 
-  // Ignore last item
-  for (let i = 0; i < props.timeSegments.length - 1; i++) {
-    const time = props.timeSegments[i];
-    const nextTime = props.timeSegments[i + 1];
+  for (const time of props.timeSegments) {
+    let duration = getDuration(time);
 
-    const date = DateTime.fromISO(time.start);
-    const nextDate = DateTime.fromISO(nextTime.start);
-
-    const duration = nextDate.diff(date);
+    findOverlappingIntersections(time, props.timeSegments).forEach((i) => {
+      duration = duration.minus(i.toDuration());
+    });
 
     if (summary[time.name]) {
       summary[time.name] = summary[time.name].plus(duration);
@@ -39,7 +76,16 @@ export const DaySummary = (props: DaySummaryProps) => {
     );
   });
 
-  return <List>{items}</List>;
+  if (items.length === 0) {
+    items.push(<ListItem>No Times</ListItem>);
+  }
+
+  return (
+    <Dialog open={props.show} onClose={props.onClose}>
+      <DialogTitle>Summary of today</DialogTitle>
+      <List>{items}</List>
+    </Dialog>
+  );
 };
 
 export default DaySummary;

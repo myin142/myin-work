@@ -7,7 +7,7 @@ import {
   TextField,
 } from '@material-ui/core';
 import { TimeSegment } from '@myin-work/cloud-shared';
-import React, { Ref, RefObject } from 'react';
+import React from 'react';
 
 import './day-time-dialog.scss';
 

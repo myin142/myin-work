@@ -15,6 +15,7 @@ import interactionPlugin from '@fullcalendar/interaction';
 import './day-tracker.scss';
 import { TimeSegment } from '@myin-work/cloud-shared';
 import DayTimeDialog from './day-time-dialog/day-time-dialog';
+import DaySummary from './day-summary/day-summary';
 
 export interface DayTrackerProps {
   workTimeClient: WorkTimeClient;
@@ -23,6 +24,7 @@ export interface DayTrackerState {
   selectedTimeId: string;
   selectedTime: TimeSegment;
   times: TimeSegment[];
+  showSummary: boolean;
 }
 
 export class DayTracker extends React.Component<
@@ -36,6 +38,7 @@ export class DayTracker extends React.Component<
     this.state = {
       selectedTimeId: null,
       selectedTime: null,
+      showSummary: false,
       times: [],
     };
   }
@@ -176,6 +179,10 @@ export class DayTracker extends React.Component<
               text: 'Save',
               click: () => this.saveTime(),
             },
+            summary: {
+              text: 'Summary',
+              click: () => this.setState({ showSummary: true }),
+            },
           }}
           headerToolbar={{
             left: 'prev,next today',
@@ -184,6 +191,7 @@ export class DayTracker extends React.Component<
           }}
           footerToolbar={{
             left: 'save',
+            right: 'summary',
           }}
           initialView="timeGridDay"
           editable={true}
@@ -194,6 +202,11 @@ export class DayTracker extends React.Component<
           eventsSet={this.handleEvents.bind(this)}
           eventClick={this.handleEventClick.bind(this)}
           datesSet={this.handleDateSet.bind(this)}
+        />
+        <DaySummary
+          timeSegments={this.state.times}
+          show={this.state.showSummary}
+          onClose={() => this.setState({ showSummary: false })}
         />
         <DayTimeDialog
           time={this.state.selectedTime}
