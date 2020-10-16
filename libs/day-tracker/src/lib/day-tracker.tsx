@@ -26,6 +26,7 @@ export interface DayTrackerState {
   selectedTime: TimeSegment;
   times: TimeSegment[];
   showSummary: boolean;
+  dirty: boolean;
 }
 
 export class DayTracker extends React.Component<
@@ -41,6 +42,7 @@ export class DayTracker extends React.Component<
       selectedTime: null,
       showSummary: false,
       times: [],
+      dirty: false,
     };
   }
 
@@ -61,6 +63,9 @@ export class DayTracker extends React.Component<
     this.calendarSource(dateTime.toISODate(), date).then((ev) => {
       this.calendar.removeAllEvents();
       ev.forEach((e) => this.calendar.addEvent(e));
+      this.setState({
+        dirty: false,
+      });
     });
   }
 
@@ -126,6 +131,7 @@ export class DayTracker extends React.Component<
 
   private handleEvents(ev: EventApi[]) {
     this.setState({
+      dirty: true,
       times: ev.map((e) => this.fromCalendarEvent(e)),
     });
   }
@@ -172,6 +178,9 @@ export class DayTracker extends React.Component<
       dayId: date,
       times: this.state.times,
     });
+    this.setState({
+      dirty: false,
+    });
   }
 
   private getSelectedEvent(): EventApi {
@@ -201,7 +210,7 @@ export class DayTracker extends React.Component<
             right: 'timeGridWeek,timeGridDay',
           }}
           footerToolbar={{
-            left: 'save',
+            left: this.state.dirty ? 'save' : '',
             right: 'summary',
           }}
           initialView="timeGridDay"
