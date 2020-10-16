@@ -49,5 +49,6 @@ describe('DaySummary', () => {
     expect(text).toContain('Third - 02:00');
     expect(text).toContain('Start Only - 01:00');
     expect(text).toContain('Break - 01:00');
+    expect(text).toContain('Total - 10:00');
   });
 });

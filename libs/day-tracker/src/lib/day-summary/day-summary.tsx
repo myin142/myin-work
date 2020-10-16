@@ -69,6 +69,17 @@ export const DaySummary = (props: DaySummaryProps) => {
     );
   });
 
+  const total = Object.keys(summary)
+    .map((n) => summary[n])
+    .reduce((d1, d2) => d1.plus(d2), Duration.fromMillis(0));
+
+  const totalItem =
+    items.length > 0 ? (
+      <ListItem>Total - {total.toFormat('hh:mm')}</ListItem>
+    ) : (
+      <></>
+    );
+
   if (items.length === 0) {
     items.push(<ListItem key={0}>No Times</ListItem>);
   }
@@ -76,7 +87,10 @@ export const DaySummary = (props: DaySummaryProps) => {
   return (
     <Dialog open={props.show} onClose={props.onClose}>
       <DialogTitle>Summary of today</DialogTitle>
-      <List>{items}</List>
+      <List>
+        {items}
+        {totalItem}
+      </List>
     </Dialog>
   );
 };
