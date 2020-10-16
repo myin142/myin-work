@@ -1,9 +1,12 @@
 import {
+  Box,
   Button,
+  Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
+  FormControlLabel,
   TextField,
 } from '@material-ui/core';
 import { TimeSegment } from '@myin-work/cloud-shared';
@@ -21,6 +24,7 @@ export interface DayTimeDialogProps {
 export interface DayTimeDialogState {
   name: string;
   comment: string;
+  break: boolean;
 }
 
 export class DayTimeDialog extends React.Component<
@@ -29,10 +33,14 @@ export class DayTimeDialog extends React.Component<
 > {
   constructor(props) {
     super(props);
+    this.state = this.defaultState;
+  }
 
-    this.state = {
+  private get defaultState(): DayTimeDialogState {
+    return {
       name: '',
       comment: '',
+      break: false,
     };
   }
 
@@ -46,11 +54,15 @@ export class DayTimeDialog extends React.Component<
     this.setState({ comment: value });
   }
 
+  private updateBreak(ev: React.ChangeEvent<HTMLInputElement>) {
+    const value = ev.target.checked;
+    this.setState({ break: value });
+  }
+
   private save() {
     this.doClose({
       start: this.props.time.start,
-      name: this.state.name,
-      comment: this.state.comment,
+      ...this.state,
     });
   }
 
@@ -61,10 +73,7 @@ export class DayTimeDialog extends React.Component<
 
   private doClose(time: TimeSegment) {
     this.props.onDialogClose(time);
-    this.setState({
-      name: '',
-      comment: '',
-    });
+    this.setState(this.defaultState);
   }
 
   private isOpen(): boolean {
@@ -75,6 +84,7 @@ export class DayTimeDialog extends React.Component<
     this.setState({
       name: this.props.time.name || '',
       comment: this.props.time.comment || '',
+      break: this.props.time.break || false,
     });
   }
 
@@ -87,16 +97,27 @@ export class DayTimeDialog extends React.Component<
       >
         <DialogTitle>Edit Time</DialogTitle>
         <DialogContent>
-          <TextField
-            label="Name"
-            value={this.state.name}
-            onChange={this.updateName.bind(this)}
-          />
-          <TextField
-            label="Comment"
-            value={this.state.comment}
-            onChange={this.updateComment.bind(this)}
-          />
+          <Box display="flex" flexDirection="column">
+            <TextField
+              label="Name"
+              value={this.state.name}
+              onChange={this.updateName.bind(this)}
+            />
+            <TextField
+              label="Comment"
+              value={this.state.comment}
+              onChange={this.updateComment.bind(this)}
+            />
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={this.state.break}
+                  onChange={this.updateBreak.bind(this)}
+                />
+              }
+              label="Break"
+            />
+          </Box>
         </DialogContent>
         <DialogActions>
           <Button onClick={this.save.bind(this)}>Save</Button>

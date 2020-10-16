@@ -35,7 +35,7 @@ describe('DaySummary', () => {
       { start: '10:00', end: '15:00', name: 'Second' },
       { start: '11:00', end: '12:00', name: 'InSecond' },
       { start: '15:00', end: '17:00', name: 'Third' },
-      { start: '12:00', end: '13:00', name: 'Break' },
+      { start: '12:00', end: '13:00', name: 'Lunch', break: true },
       { start: '17:00', name: 'Start Only' },
     ];
     const { baseElement } = render(
@@ -48,7 +48,8 @@ describe('DaySummary', () => {
     expect(text).toContain('InSecond - 01:00');
     expect(text).toContain('Third - 02:00');
     expect(text).toContain('Start Only - 01:00');
+    expect(text).not.toContain('Lunch - 01:00');
+    expect(text).toContain('Total - 09:00');
     expect(text).toContain('Break - 01:00');
-    expect(text).toContain('Total - 10:00');
   });
 });

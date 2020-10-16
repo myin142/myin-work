@@ -15,4 +15,5 @@ export interface TimeSegment {
 	end?: string;
 	name?: string;
 	comment?: string;
+	break?: boolean;
 }

@@ -48,8 +48,11 @@ export class DayTracker extends React.Component<
     return this.calendarRef.current.getApi();
   }
 
+  private get currentDate(): Date {
+    return this.calendar.getDate();
+  }
+
   private handleDateSet(e: DatesSetArg) {
-    console.log(e.start);
     this.reloadTimesForDay(e.start);
   }
 
@@ -63,6 +66,7 @@ export class DayTracker extends React.Component<
 
   private async calendarSource(day: string, date: Date): Promise<EventInput[]> {
     const times = await this.fetchTimesForDate(day);
+    console.log(times);
     return times.map((t, i) => ({
       id: `${i}`,
       ...this.toCalendarEvent(t, date),
@@ -79,11 +83,19 @@ export class DayTracker extends React.Component<
     return [];
   }
 
-  private toCalendarEvent(time: TimeSegment, date = new Date()): EventInput {
+  private toCalendarEvent(
+    time: TimeSegment,
+    date = this.currentDate
+  ): EventInput {
     return {
       start: TimeUtils.timeToDate(time.start, date),
       end: TimeUtils.getEndDate(time, date),
       title: time.name,
+      color: time.break ? 'rgb(220, 0, 78)' : '',
+      extendedProps: {
+        break: time.break,
+        comment: time.comment,
+      },
     };
   }
 
@@ -92,6 +104,8 @@ export class DayTracker extends React.Component<
       start: TimeUtils.dateToTime(ev.start),
       end: TimeUtils.dateToTime(ev.end),
       name: ev.title,
+      break: ev.extendedProps.break,
+      comment: ev.extendedProps.comment,
     };
   }
 
@@ -104,7 +118,6 @@ export class DayTracker extends React.Component<
   }
 
   private handleEventClick(ev: EventClickArg) {
-    console.log(ev);
     this.setState({
       selectedTimeId: ev.event.id,
       selectedTime: this.fromCalendarEvent(ev.event),
@@ -139,7 +152,12 @@ export class DayTracker extends React.Component<
 
   private editTime(time: TimeSegment) {
     if (time == null || this.state.selectedTimeId == null) return;
-    this.getSelectedEvent().setProp('title', time.name);
+    const calendarEv = this.toCalendarEvent(time);
+    const ev = this.getSelectedEvent();
+    ev.setProp('title', calendarEv.title);
+    ev.setExtendedProp('comment', calendarEv.extendedProps.comment);
+    ev.setExtendedProp('break', calendarEv.extendedProps.break);
+    ev.setProp('color', calendarEv.color);
   }
 
   private deleteTime() {
@@ -149,9 +167,9 @@ export class DayTracker extends React.Component<
   }
 
   private saveTime() {
-    const today = new Date();
+    const date = DateTime.fromJSDate(this.currentDate).toISODate();
     this.props.workTimeClient.createWorkTime({
-      dayId: today.toISOString(),
+      dayId: date,
       times: this.state.times,
     });
   }

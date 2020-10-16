@@ -4,6 +4,7 @@ import {
   List,
   ListItem,
   ListItemText,
+  Typography,
 } from '@material-ui/core';
 import { TimeSegment } from '@myin-work/cloud-shared';
 import React from 'react';
@@ -42,8 +43,27 @@ function getDuration(time: TimeSegment): Duration {
   return DateTime.fromJSDate(endDate).diff(date);
 }
 
+function createListItem(times: { [k: string]: Duration }) {
+  return Object.keys(times).map((n, i) => {
+    return (
+      <ListItem key={n}>
+        <ListItemText>
+          {n} - {times[n].toFormat('hh:mm')}
+        </ListItemText>
+      </ListItem>
+    );
+  });
+}
+
+function sumOfDurations(times: { [k: string]: Duration }): Duration {
+  return Object.keys(times)
+    .map((n) => times[n])
+    .reduce((d1, d2) => d1.plus(d2), Duration.fromMillis(0));
+}
+
 export const DaySummary = (props: DaySummaryProps) => {
   const summary: { [k: string]: Duration } = {};
+  const breaks: { [k: string]: Duration } = {};
 
   for (const time of props.timeSegments) {
     let duration = getDuration(time);
@@ -52,30 +72,29 @@ export const DaySummary = (props: DaySummaryProps) => {
       duration = duration.minus(i.toDuration());
     });
 
-    if (summary[time.name]) {
-      summary[time.name] = summary[time.name].plus(duration);
+    const obj = time.break ? breaks : summary;
+    if (obj[time.name]) {
+      obj[time.name] = obj[time.name].plus(duration);
     } else {
-      summary[time.name] = duration;
+      obj[time.name] = duration;
     }
   }
 
-  const items = Object.keys(summary).map((n, i) => {
-    return (
-      <ListItem key={i}>
-        <ListItemText>
-          {n} - {summary[n].toFormat('hh:mm')}
-        </ListItemText>
-      </ListItem>
-    );
-  });
+  const items = createListItem(summary);
 
-  const total = Object.keys(summary)
-    .map((n) => summary[n])
-    .reduce((d1, d2) => d1.plus(d2), Duration.fromMillis(0));
+  const total = sumOfDurations(summary);
+  const breakTotal = sumOfDurations(breaks);
 
   const totalItem =
     items.length > 0 ? (
-      <ListItem>Total - {total.toFormat('hh:mm')}</ListItem>
+      <ListItem key={0}>
+        <ListItemText>
+          <Typography style={{ fontWeight: 'bold' }}>
+            Total - {total.toFormat('hh:mm')}, Break -{' '}
+            {breakTotal.toFormat('hh:mm')}
+          </Typography>
+        </ListItemText>
+      </ListItem>
     ) : (
       <></>
     );
