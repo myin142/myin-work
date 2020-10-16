@@ -16,6 +16,7 @@ import './day-tracker.scss';
 import { TimeSegment } from '@myin-work/cloud-shared';
 import DayTimeDialog from './day-time-dialog/day-time-dialog';
 import DaySummary from './day-summary/day-summary';
+import { TimeUtils } from '@myin-work/time-utils';
 
 export interface DayTrackerProps {
   workTimeClient: WorkTimeClient;
@@ -48,21 +49,23 @@ export class DayTracker extends React.Component<
   }
 
   private handleDateSet(e: DatesSetArg) {
-    this.reloadTimesForDay(DateTime.fromJSDate(e.start).toISODate());
+    console.log(e.start);
+    this.reloadTimesForDay(e.start);
   }
 
-  private reloadTimesForDay(day: string) {
-    this.calendarSource(day).then((ev) => {
+  private reloadTimesForDay(date: Date) {
+    var dateTime = DateTime.fromJSDate(date);
+    this.calendarSource(dateTime.toISODate(), date).then((ev) => {
       this.calendar.removeAllEvents();
       ev.forEach((e) => this.calendar.addEvent(e));
     });
   }
 
-  private async calendarSource(day: string): Promise<EventInput[]> {
+  private async calendarSource(day: string, date: Date): Promise<EventInput[]> {
     const times = await this.fetchTimesForDate(day);
     return times.map((t, i) => ({
       id: `${i}`,
-      ...this.toCalendarEvent(t),
+      ...this.toCalendarEvent(t, date),
     }));
   }
 
@@ -76,28 +79,18 @@ export class DayTracker extends React.Component<
     return [];
   }
 
-  private toTimeString(date: Date): string {
-    if (date == null) return '';
-    return DateTime.fromJSDate(date).toFormat('HH:mm');
-  }
-
-  private fromTimeString(time: string): Date {
-    if (time == null) return null;
-    return DateTime.fromFormat(time, 'HH:mm').toJSDate();
-  }
-
-  private toCalendarEvent(time: TimeSegment): EventInput {
+  private toCalendarEvent(time: TimeSegment, date = new Date()): EventInput {
     return {
-      start: this.fromTimeString(time.start),
-      end: this.fromTimeString(time.end),
+      start: TimeUtils.timeToDate(time.start, date),
+      end: TimeUtils.getEndDate(time, date),
       title: time.name,
     };
   }
 
   private fromCalendarEvent(ev: EventApi): TimeSegment {
     return {
-      start: this.toTimeString(ev.start),
-      end: this.toTimeString(ev.end),
+      start: TimeUtils.dateToTime(ev.start),
+      end: TimeUtils.dateToTime(ev.end),
       name: ev.title,
     };
   }
@@ -105,7 +98,7 @@ export class DayTracker extends React.Component<
   private handleDateSelect(selectInfo: DateSelectArg) {
     this.setState({
       selectedTime: {
-        start: this.toTimeString(selectInfo.start),
+        start: TimeUtils.dateToTime(selectInfo.start),
       },
     });
   }

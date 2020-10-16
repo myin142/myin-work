@@ -256,6 +256,32 @@
           }
         }
       }
+    },
+    "time-utils": {
+      "root": "libs/time-utils",
+      "sourceRoot": "libs/time-utils/src",
+      "projectType": "library",
+      "schematics": {},
+      "architect": {
+        "lint": {
+          "builder": "@nrwl/linter:lint",
+          "options": {
+            "linter": "eslint",
+            "tsConfig": [
+              "libs/time-utils/tsconfig.lib.json",
+              "libs/time-utils/tsconfig.spec.json"
+            ],
+            "exclude": ["**/node_modules/**", "!libs/time-utils/**/*"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "libs/time-utils/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
     }
   },
   "cli": {

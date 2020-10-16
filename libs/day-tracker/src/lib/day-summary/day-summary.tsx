@@ -1,6 +1,5 @@
 import {
   Dialog,
-  DialogContent,
   DialogTitle,
   List,
   ListItem,
@@ -10,11 +9,12 @@ import { TimeSegment } from '@myin-work/cloud-shared';
 import React from 'react';
 import { DateTime, Duration, Interval } from 'luxon';
 import './day-summary.scss';
+import { TimeUtils } from '@myin-work/time-utils';
 
 export interface DaySummaryProps {
   timeSegments: TimeSegment[];
   show: boolean;
-  onClose: () => void;
+  onClose?: () => void;
 }
 
 function findOverlappingIntersections(
@@ -32,21 +32,14 @@ function findOverlappingIntersections(
 
 function getInterval(time: TimeSegment): Interval {
   const start = DateTime.fromISO(time.start);
-  const end = getEndDate(time);
+  const end = TimeUtils.getEndDate(time);
   return Interval.fromDateTimes(start, end);
 }
 
 function getDuration(time: TimeSegment): Duration {
   const date = DateTime.fromISO(time.start);
-  const endDate = getEndDate(time);
-  return endDate.diff(date);
-}
-
-function getEndDate(time: TimeSegment): DateTime {
-  const date = DateTime.fromISO(time.start);
-  return time.end
-    ? DateTime.fromISO(time.end)
-    : date.plus(Duration.fromObject({ hours: 1 }));
+  const endDate = TimeUtils.getEndDate(time);
+  return DateTime.fromJSDate(endDate).diff(date);
 }
 
 export const DaySummary = (props: DaySummaryProps) => {
@@ -77,7 +70,7 @@ export const DaySummary = (props: DaySummaryProps) => {
   });
 
   if (items.length === 0) {
-    items.push(<ListItem>No Times</ListItem>);
+    items.push(<ListItem key={0}>No Times</ListItem>);
   }
 
   return (

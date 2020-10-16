@@ -43,6 +43,9 @@
     },
     "day-tracker": {
       "tags": []
+    },
+    "time-utils": {
+      "tags": []
     }
   }
 }
