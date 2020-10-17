@@ -222,6 +222,9 @@ export class DayTracker extends React.Component<
           eventsSet={this.handleEvents.bind(this)}
           eventClick={this.handleEventClick.bind(this)}
           datesSet={this.handleDateSet.bind(this)}
+          slotDuration="00:15:00"
+          slotMinTime="07:00:00"
+          slotMaxTime="19:00:00"
         />
         <DaySummary
           timeSegments={this.state.times}
