@@ -40,7 +40,8 @@
     "luxon": "^1.25.0",
     "react": "16.13.1",
     "react-dom": "16.13.1",
-    "react-router-dom": "^5.2.0"
+    "react-router-dom": "^5.2.0",
+    "xlsx": "^0.16.8"
   },
   "devDependencies": {
     "@aws-cdk/assert": "^1.46.0",

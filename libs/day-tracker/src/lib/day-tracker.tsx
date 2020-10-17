@@ -1,4 +1,5 @@
 import { WorkTimeClient } from '@myin-work/work-time-client';
+import { Redirect } from 'react-router-dom';
 import { DateTime } from 'luxon';
 import React, { RefObject } from 'react';
 import FullCalendar, {
@@ -27,6 +28,7 @@ export interface DayTrackerState {
   times: TimeSegment[];
   showSummary: boolean;
   dirty: boolean;
+  redirect: string;
 }
 
 export class DayTracker extends React.Component<
@@ -43,6 +45,7 @@ export class DayTracker extends React.Component<
       showSummary: false,
       times: [],
       dirty: false,
+      redirect: null,
     };
   }
 
@@ -189,6 +192,10 @@ export class DayTracker extends React.Component<
   }
 
   render() {
+    if (this.state.redirect) {
+      return <Redirect to={this.state.redirect} />;
+    }
+
     return (
       <div className="calendar">
         <FullCalendar
@@ -203,6 +210,10 @@ export class DayTracker extends React.Component<
               text: 'Summary',
               click: () => this.setState({ showSummary: true }),
             },
+            export: {
+              text: 'Export',
+              click: () => this.setState({ redirect: 'export' }),
+            },
           }}
           headerToolbar={{
             left: 'prev,next today',
@@ -211,7 +222,7 @@ export class DayTracker extends React.Component<
           }}
           footerToolbar={{
             left: this.state.dirty ? 'save' : '',
-            right: 'summary',
+            right: 'export summary',
           }}
           initialView="timeGridDay"
           editable={true}
