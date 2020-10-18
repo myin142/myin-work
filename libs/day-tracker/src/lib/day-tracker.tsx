@@ -74,7 +74,6 @@ export class DayTracker extends React.Component<
 
   private async calendarSource(day: string, date: Date): Promise<EventInput[]> {
     const times = await this.fetchTimesForDate(day);
-    console.log(times);
     return times.map((t, i) => ({
       id: `${i}`,
       ...this.toCalendarEvent(t, date),
@@ -85,7 +84,7 @@ export class DayTracker extends React.Component<
     try {
       const workTime = await this.props.workTimeClient.getTimeOfDay(date);
       if (workTime && workTime.length > 0) {
-        return workTime[0].times;
+        return workTime[0].times || [];
       }
     } catch (e) {}
     return [];
