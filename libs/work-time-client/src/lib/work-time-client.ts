@@ -6,7 +6,9 @@ export class WorkTimeClient extends ApiClient {
 	constructor(authClient: AuthClient) {
 		super({
 			authClient,
-			baseURL: 'https://ba9tfikzda.execute-api.eu-central-1.amazonaws.com/', stage: Stage.PROD,
+			stage: Stage.PROD,
+			baseURL: 'https://ba9tfikzda.execute-api.eu-central-1.amazonaws.com/',
+			debug: true,
 			tokenFn: () => authClient.getToken(),
 		});
 	}
