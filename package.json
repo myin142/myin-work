@@ -33,7 +33,7 @@
     "@material-ui/core": "^4.11.0",
     "@material-ui/lab": "^4.0.0-alpha.56",
     "@material-ui/pickers": "^3.2.10",
-    "@myin/auth-client": "0.0.6",
+    "@myin/auth-client": "0.0.7",
     "@myin/utils": "0.0.4",
     "axios": "^0.20.0",
     "document-register-element": "1.13.1",

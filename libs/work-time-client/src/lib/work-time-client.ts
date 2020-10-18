@@ -3,7 +3,7 @@ import { AuthClient, ApiClient, Stage } from '@myin/auth-client';
 
 export class WorkTimeClient extends ApiClient {
 
-	contstructor(authClient: AuthClient) {
+	constructor(authClient: AuthClient) {
 		super({
 			authClient,
 			baseURL: 'https://ba9tfikzda.execute-api.eu-central-1.amazonaws.com/', stage: Stage.PROD,
