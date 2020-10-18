@@ -1,11 +1,11 @@
 import { WorkTime } from '@myin-work/cloud-shared';
-import { AuthClient } from '@myin/auth-client';
-import { ApiClient, Stage } from './api-client';
+import { AuthClient, ApiClient, Stage } from '@myin/auth-client';
 
 export class WorkTimeClient extends ApiClient {
 
-	constructor(authClient: AuthClient) {
+	contstructor(authClient: AuthClient) {
 		super({
+			authClient,
 			baseURL: 'https://ba9tfikzda.execute-api.eu-central-1.amazonaws.com/', stage: Stage.PROD,
 			tokenFn: () => authClient.getToken(),
 		});
