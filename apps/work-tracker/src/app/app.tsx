@@ -9,9 +9,9 @@ import './app.scss';
 import { WorkTimeClient } from '@myin-work/work-time-client';
 
 export const App = () => {
-  const authClient = new AuthClient(true);
+  const authClient = new AuthClient(environment.production, true);
   const workTimeClient = new WorkTimeClient(authClient);
-  if (!authClient.isAuthenticated()) {
+  if (environment.production && !authClient.isAuthenticated()) {
     authClient.logout();
     return null;
   }
