@@ -9,7 +9,7 @@ export class WorkTimeClient extends ApiClient {
 			stage: Stage.PROD,
 			baseURL: 'https://ba9tfikzda.execute-api.eu-central-1.amazonaws.com/',
 			debug: true,
-			tokenFn: () => authClient.getToken(),
+			tokenFn: () => authClient.token,
 		});
 	}
 
