@@ -3,6 +3,6 @@
   "version": "1.0.0",
   "main": "src/app.js",
   "dependencies": {
-    "@myin/aws-utils": "^0.0.6"
+    "@myin/aws-utils": "^0.0.7"
   }
 }
