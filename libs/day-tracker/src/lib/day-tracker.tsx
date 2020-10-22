@@ -174,10 +174,10 @@ export class DayTracker extends React.Component<
     }
   }
 
-  private saveTime() {
+  private async saveTime() {
     const date = DateTime.fromJSDate(this.currentDate).toISODate();
     try {
-      this.props.workTimeClient.createWorkTime({
+      await this.props.workTimeClient.createWorkTime({
         dayId: date,
         times: this.state.times,
       });
