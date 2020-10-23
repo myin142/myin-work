@@ -18,7 +18,6 @@ export class WorkTimeClient extends ApiClient {
 	}
 
 	public async createWorkTime(workTime: WorkTime): Promise<WorkTime> {
-		throw new Error('');
 		return this.post(`/time`, workTime);
 	}
 
