@@ -1,6 +1,6 @@
 import { WorkTimeClient } from '@myin-work/work-time-client';
 import { Redirect } from 'react-router-dom';
-import { DateTime } from 'luxon';
+import { DateTime, Interval } from 'luxon';
 import React, { RefObject } from 'react';
 import FullCalendar, {
   CalendarApi,
@@ -31,10 +31,19 @@ export interface DayTrackerState {
   redirect: string;
 }
 
+interface Holiday {
+  name: string;
+  date: string;
+  type?: string;
+}
+
 export class DayTracker extends React.Component<
   DayTrackerProps,
   DayTrackerState
 > {
+  private static HOLIDAY_KEY = 'myin-work-holidays';
+  private static HOLIDAY_YEAR_KEY = 'myin-work-holidays-year';
+
   private calendarRef: RefObject<FullCalendar> = React.createRef();
 
   constructor(props: DayTrackerProps) {
@@ -49,6 +58,46 @@ export class DayTracker extends React.Component<
     };
   }
 
+  private async loadHolidays() {
+    const currentYear = DateTime.fromJSDate(new Date()).year;
+    const savedYear = parseInt(
+      localStorage.getItem(DayTracker.HOLIDAY_YEAR_KEY)
+    );
+    if (currentYear != savedYear) {
+      const response = await fetch(
+        `https://holidays.abstractapi.com/v1/?api_key=50b53820a2154b05b2b0d977080fd472&country=AT&year=${currentYear}`
+      );
+
+      const data: Holiday[] = await response.json();
+      const compactData: Holiday[] = data
+        .filter((d) => d.type === 'National')
+        .map((d) => ({ name: d.name, date: d.date }));
+
+      localStorage.setItem(DayTracker.HOLIDAY_KEY, JSON.stringify(compactData));
+      localStorage.setItem(DayTracker.HOLIDAY_YEAR_KEY, `${currentYear}`);
+    }
+  }
+
+  private getHolidayEvents(interval: Interval): EventInput[] {
+    const format = 'MM/dd/yyyy';
+    this.loadHolidays();
+    return this.holidays
+      .filter((h) => {
+        const date = DateTime.fromFormat(h.date, format);
+        return interval.contains(date);
+      })
+      .map((h) => ({
+        allDay: true,
+        title: h.name,
+        date: DateTime.fromFormat(h.date, format).toJSDate(),
+        color: '#33DD33',
+      }));
+  }
+
+  private get holidays(): Holiday[] {
+    return JSON.parse(localStorage.getItem(DayTracker.HOLIDAY_KEY));
+  }
+
   private get calendar(): CalendarApi {
     return this.calendarRef.current.getApi();
   }
@@ -61,14 +110,19 @@ export class DayTracker extends React.Component<
     this.reloadTimesForDay([e.start, e.end]);
   }
 
-  private reloadTimesForDay(dates: Date[]) {
-    this.calendarSource(dates).then((ev) => {
-      this.calendar.removeAllEvents();
-      ev.forEach((e) => this.calendar.addEvent(e));
+  private async reloadTimesForDay(dates: Date[]) {
+    // Currently only support 2 items
+    const interval = Interval.fromDateTimes(dates[0], dates[1]);
+    const ev = await this.calendarSource(dates);
+    const holidays = this.getHolidayEvents(interval);
+    ev.push(...holidays);
+    ev;
 
-      this.setState({
-        dirty: false,
-      });
+    this.calendar.removeAllEvents();
+    ev.forEach((e) => this.calendar.addEvent(e));
+
+    this.setState({
+      dirty: false,
     });
   }
 
@@ -233,8 +287,6 @@ export class DayTracker extends React.Component<
           initialView="timeGridWeek"
           editable={true}
           selectable={true}
-          allDaySlot={false}
-          weekends={false}
           select={this.handleDateSelect.bind(this)}
           eventsSet={this.handleEvents.bind(this)}
           eventClick={this.handleEventClick.bind(this)}
