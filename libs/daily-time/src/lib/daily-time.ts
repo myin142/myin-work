@@ -9,13 +9,8 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
 	try {
 		switch (event.httpMethod) {
 			case 'GET':
-				if (!event.queryStringParameters || !event.queryStringParameters.date) {
-					error = 'Missing date query parameter';
-					break;
-				}
-
-				const date = event.queryStringParameters.date;
-				return successAndBody(await getWorkTimes(subject, date));
+				const dates = event.multiValueQueryStringParameters.date;
+				return successAndBody(await getWorkTimes(subject, dates));
 			case 'POST':
 				const workTime: WorkTime = JSON.parse(event.body) || {};
 				workTime.userId = subject;
@@ -66,8 +61,17 @@ function isValidDate(date: Date): boolean {
 	return !isNaN(date.getTime());
 }
 
-async function getWorkTimes(user: string, dateStr: string): Promise<WorkTime[]> {
-	return dynamoWrapper.query(Dynamo.WorkTrackerTable,
-		`${Dynamo.WorkTrackerUser} = :u and begins_with(${Dynamo.WorkTrackerDate}, :d)`,
-		{ u: user, d: parseOnlyDate(dateStr), });
+async function getWorkTimes(user: string, dates: string[]): Promise<WorkTime[]> {
+	let expression = `${Dynamo.WorkTrackerUser} = :u and `;
+	let values = { u: user };
+	if (dates.length == 1) {
+		expression += `begins_with(${Dynamo.WorkTrackerDate}, :d)`;
+		values['d'] = parseOnlyDate(dates[0]);
+	} else if (dates.length > 1) {
+		expression += `${Dynamo.WorkTrackerDate} between :d1 and :d2`;
+		values['d1'] = parseOnlyDate(dates[0]);
+		values['d2'] = parseOnlyDate(dates[1]);
+	}
+
+	return dynamoWrapper.query(Dynamo.WorkTrackerTable, expression, values);
 }

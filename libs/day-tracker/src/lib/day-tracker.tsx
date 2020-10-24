@@ -14,7 +14,7 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 
 import './day-tracker.scss';
-import { TimeSegment } from '@myin-work/cloud-shared';
+import { TimeSegment, WorkTime } from '@myin-work/cloud-shared';
 import DayTimeDialog from './day-time-dialog/day-time-dialog';
 import DaySummary from './day-summary/day-summary';
 import { TimeUtils } from '@myin-work/time-utils';
@@ -58,34 +58,37 @@ export class DayTracker extends React.Component<
   }
 
   private handleDateSet(e: DatesSetArg) {
-    this.reloadTimesForDay(e.start);
+    this.reloadTimesForDay([e.start, e.end]);
   }
 
-  private reloadTimesForDay(date: Date) {
-    var dateTime = DateTime.fromJSDate(date);
-    this.calendarSource(dateTime.toISODate(), date).then((ev) => {
+  private reloadTimesForDay(dates: Date[]) {
+    this.calendarSource(dates).then((ev) => {
       this.calendar.removeAllEvents();
       ev.forEach((e) => this.calendar.addEvent(e));
+
       this.setState({
         dirty: false,
       });
     });
   }
 
-  private async calendarSource(day: string, date: Date): Promise<EventInput[]> {
-    const times = await this.fetchTimesForDate(day);
-    return times.map((t, i) => ({
-      id: `${i}`,
-      ...this.toCalendarEvent(t, date),
-    }));
+  private async calendarSource(dates: Date[]): Promise<EventInput[]> {
+    var dateStr = dates.map((d) => DateTime.fromJSDate(d).toISODate());
+    const workTime = await this.fetchTimesForDate(dateStr);
+    return workTime
+      .map((work, i) => {
+        return work.times.map((t) => ({
+          id: `${i}`,
+          ...this.toCalendarEvent(t, DateTime.fromISO(work.dayId).toJSDate()),
+        }));
+      })
+      .reduce((a1, a2) => [...a1, ...a2], []);
   }
 
-  private async fetchTimesForDate(date: string): Promise<TimeSegment[]> {
+  private async fetchTimesForDate(dates: string[]): Promise<WorkTime[]> {
     try {
-      const workTime = await this.props.workTimeClient.getTimeOfDay(date);
-      if (workTime && workTime.length > 0) {
-        return workTime[0].times || [];
-      }
+      const workTime = await this.props.workTimeClient.getTimeOfDay(dates);
+      return workTime || [];
     } catch (e) {}
     return [];
   }
@@ -227,7 +230,7 @@ export class DayTracker extends React.Component<
             left: this.state.dirty ? 'save' : '',
             right: 'export summary',
           }}
-          initialView="timeGridDay"
+          initialView="timeGridWeek"
           editable={true}
           selectable={true}
           allDaySlot={false}
