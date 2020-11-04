@@ -12,9 +12,9 @@ export interface ExporterProps {
 export class Exporter extends React.Component<ExporterProps> {
   private export() {
     const wb = XLSX.utils.book_new();
-    const worksheet = XLSX.utils.aoa_to_sheet([
-      [{ w: '08:00' }, '17:00', { f: 'B1-A1' }],
-    ]);
+    const worksheet = XLSX.utils.aoa_to_sheet([['08:00', '17:00', '=B1-A1']], {
+      cellDates: true,
+    });
     XLSX.utils.book_append_sheet(wb, worksheet, 'SheetJS');
     XLSX.writeFile(wb, 'test.xlsx');
   }

@@ -29,6 +29,18 @@ describe('DaySummary', () => {
     expect(baseElement.textContent).toContain('Inner - 02:30');
   });
 
+  it('should subtract same start times', () => {
+    const times: TimeSegment[] = [
+      { start: '08:00', end: '10:00', name: 'Outer' },
+      { start: '08:00', end: '09:00', name: 'Inner' },
+    ];
+    const { baseElement } = render(
+      <DaySummary timeSegments={times} show={true} />
+    );
+    expect(baseElement.textContent).toContain('Outer - 01:00');
+    expect(baseElement.textContent).toContain('Inner - 01:00');
+  });
+
   it('should render successfully', () => {
     const times: TimeSegment[] = [
       { start: '08:00', end: '10:00', name: 'First' },

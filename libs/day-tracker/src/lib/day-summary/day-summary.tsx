@@ -26,7 +26,7 @@ function findOverlappingIntersections(
   return times
     .filter((t) => t.name !== time.name)
     .map((t) => getInterval(t))
-    .filter((i) => i.isAfter(interval.start))
+    .filter((i) => i.isAfter(interval.start) || interval.engulfs(i))
     .map((i) => interval.intersection(i))
     .filter((i) => !!i);
 }
