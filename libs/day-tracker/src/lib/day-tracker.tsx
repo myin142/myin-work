@@ -58,6 +58,21 @@ export class DayTracker extends React.Component<
     };
   }
 
+  componentDidMount() {
+      window.onbeforeunload = e => {
+        if (this.state.dirty) {
+            e = e || window.event;
+            const msg = 'There are unsaved changes.';
+
+            if (e) {
+                e.returnValue = msg
+            }
+
+            return msg;
+        }
+      };
+  }
+
   private async loadHolidays() {
     const currentYear = DateTime.fromJSDate(new Date()).year;
     const savedYear = parseInt(
@@ -251,6 +266,16 @@ export class DayTracker extends React.Component<
     return cal.getEventById(this.state.selectedTimeId);
   }
 
+  private footerButtons(): string {
+      let buttons = [];
+      if (!this.state.dirty) {
+        buttons.push('export');
+      }
+
+      buttons.push('summary');
+      return buttons.join(' ');
+  }
+
   render() {
     if (this.state.redirect) {
       return <Redirect to={this.state.redirect} />;
@@ -282,7 +307,7 @@ export class DayTracker extends React.Component<
           }}
           footerToolbar={{
             left: this.state.dirty ? 'save' : '',
-            right: 'export summary',
+            right: this.footerButtons(),
           }}
           initialView="timeGridWeek"
           editable={true}
