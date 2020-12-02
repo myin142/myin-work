@@ -43,8 +43,8 @@ describe('DaySummary', () => {
 
   it('should render successfully', () => {
     const times: TimeSegment[] = [
-      { start: '08:00', end: '10:00', name: 'First' },
-      { start: '10:00', end: '15:00', name: 'Second' },
+      { start: '08:00', end: '10:00', name: 'First', comment: 'First Task' },
+      { start: '10:00', end: '15:00', name: 'Second', comment: 'Second Task' },
       { start: '11:00', end: '12:00', name: 'InSecond' },
       { start: '15:00', end: '17:00', name: 'Third' },
       { start: '12:00', end: '13:00', name: 'Lunch', break: true },
@@ -55,8 +55,8 @@ describe('DaySummary', () => {
     );
     const text = baseElement.textContent;
 
-    expect(text).toContain('First - 02:00');
-    expect(text).toContain('Second - 03:00');
+    expect(text).toContain('First - 02:00: First Task');
+    expect(text).toContain('Second - 03:00: Second Task');
     expect(text).toContain('InSecond - 01:00');
     expect(text).toContain('Third - 02:00');
     expect(text).toContain('Start Only - 01:00');

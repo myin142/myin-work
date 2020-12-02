@@ -59,18 +59,18 @@ export class DayTracker extends React.Component<
   }
 
   componentDidMount() {
-      window.onbeforeunload = e => {
-        if (this.state.dirty) {
-            e = e || window.event;
-            const msg = 'There are unsaved changes.';
+    window.onbeforeunload = (e) => {
+      if (this.state.dirty) {
+        e = e || window.event;
+        const msg = 'There are unsaved changes.';
 
-            if (e) {
-                e.returnValue = msg
-            }
-
-            return msg;
+        if (e) {
+          e.returnValue = msg;
         }
-      };
+
+        return msg;
+      }
+    };
   }
 
   private async loadHolidays() {
@@ -145,9 +145,9 @@ export class DayTracker extends React.Component<
     var dateStr = dates.map((d) => DateTime.fromJSDate(d).toISODate());
     const workTime = await this.fetchTimesForDate(dateStr);
     return workTime
-      .map((work, i) => {
-        return work.times.map((t) => ({
-          id: `${i}`,
+      .map((work) => {
+        return work.times.map((t, i) => ({
+          id: `${work.dayId}#${i}`,
           ...this.toCalendarEvent(t, DateTime.fromISO(work.dayId).toJSDate()),
         }));
       })
@@ -267,13 +267,13 @@ export class DayTracker extends React.Component<
   }
 
   private footerButtons(): string {
-      let buttons = [];
-      if (!this.state.dirty) {
-        buttons.push('export');
-      }
+    let buttons = [];
+    if (!this.state.dirty) {
+      buttons.push('export');
+    }
 
-      buttons.push('summary');
-      return buttons.join(' ');
+    buttons.push('summary');
+    return buttons.join(' ');
   }
 
   render() {
@@ -309,7 +309,7 @@ export class DayTracker extends React.Component<
             left: this.state.dirty ? 'save' : '',
             right: this.footerButtons(),
           }}
-          initialView="timeGridWeek"
+          initialView="timeGridDay"
           editable={true}
           selectable={true}
           select={this.handleDateSelect.bind(this)}
@@ -323,6 +323,7 @@ export class DayTracker extends React.Component<
         <DaySummary
           timeSegments={this.state.times}
           show={this.state.showSummary}
+          dirty={this.state.dirty}
           onClose={() => this.setState({ showSummary: false })}
         />
         <DayTimeDialog
