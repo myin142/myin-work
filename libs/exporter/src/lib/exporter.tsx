@@ -2,10 +2,12 @@ import React from 'react';
 import { WorkTimeClient } from '@myin-work/work-time-client';
 import { TimeUtils } from '@myin-work/time-utils';
 import XLSX from 'xlsx';
+import ExcellentExport from 'excellentexport';
 
 import './exporter.scss';
 import {
   Button,
+  Link,
   Paper,
   Table,
   TableBody,
@@ -14,6 +16,7 @@ import {
   TableHead,
   TableRow,
 } from '@material-ui/core';
+import { DateTime } from 'luxon';
 
 export interface ExporterProps {
   workTimeClient: WorkTimeClient;
@@ -43,7 +46,17 @@ export class Exporter extends React.Component<ExporterProps, ExporterState> {
     };
   }
 
-  private async export() {}
+  private export() {
+    // TODO: find way to supported cell merging/formatting
+    return ExcellentExport.convert(
+      {
+        anchor: 'export',
+        filename: `${this.state.year}${this.state.month + 1}-timesheet`,
+        format: 'xlsx',
+      },
+      [{ name: 'Timesheet', from: { table: 'data' } }]
+    );
+  }
 
   private async show() {
     // TODO: get month from user
@@ -65,13 +78,6 @@ export class Exporter extends React.Component<ExporterProps, ExporterState> {
       year,
       month: month - 1,
     });
-
-    // const wb = XLSX.utils.book_new();
-    // const worksheet = XLSX.utils.aoa_to_sheet([['08:00', '17:00', '=B1-A1']], {
-    //   cellDates: true,
-    // });
-    // XLSX.utils.book_append_sheet(wb, worksheet, 'SheetJS');
-    // XLSX.writeFile(wb, 'test.xlsx');
   }
 
   private getDaysInMonth(): Date[] {
@@ -106,18 +112,29 @@ export class Exporter extends React.Component<ExporterProps, ExporterState> {
     return weekend.includes(date.getDay());
   }
 
+  private formatDayDate(day: Date): string {
+    return DateTime.fromJSDate(day).toFormat('dd/MM');
+  }
+
+  private formatDayOfWeek(day: Date): string {
+    return DateTime.fromJSDate(day).toFormat('ccc.');
+  }
+
   render() {
     return (
       <div>
         <Button onClick={this.show.bind(this)}>Show</Button>
         {this.state.table.length > 0 && (
-          <Button onClick={this.export.bind(this)}>Export</Button>
+          <Link id="export" onClick={this.export.bind(this)}>
+            Export
+          </Link>
         )}
         {this.state.table.length > 0 && (
           <TableContainer component={Paper}>
             <Table size="small" id="data">
               <TableHead>
                 <TableRow>
+                  <TableCell>Day</TableCell>
                   <TableCell>Date</TableCell>
                   <TableCell>From</TableCell>
                   <TableCell>To</TableCell>
@@ -126,12 +143,17 @@ export class Exporter extends React.Component<ExporterProps, ExporterState> {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {this.getDaysInMonth().map((day) => (
+                {this.getDaysInMonth().map((day, i) => (
                   <TableRow
-                    key={day.toDateString()}
+                    key={i}
                     className={this.isNonWorkDay(day) ? 'holiday' : ''}
                   >
-                    <TableCell component="th">{day.toDateString()}</TableCell>
+                    <TableCell component="th">
+                      {this.formatDayOfWeek(day)}
+                    </TableCell>
+                    <TableCell component="th">
+                      {this.formatDayDate(day)}
+                    </TableCell>
                     <TableCell>
                       {this.getTimeValueForDate(day, (x) => x.start)}
                     </TableCell>
