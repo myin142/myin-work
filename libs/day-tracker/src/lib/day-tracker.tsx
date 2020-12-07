@@ -18,6 +18,7 @@ import { TimeSegment, WorkTime } from '@myin-work/cloud-shared';
 import DayTimeDialog from './day-time-dialog/day-time-dialog';
 import DaySummary from './day-summary/day-summary';
 import { TimeUtils } from '@myin-work/time-utils';
+import { SessionExpired } from './session-expired/session-expired';
 
 export interface DayTrackerProps {
   workTimeClient: WorkTimeClient;
@@ -29,6 +30,7 @@ export interface DayTrackerState {
   showSummary: boolean;
   dirty: boolean;
   redirect: string;
+  expired: boolean;
 }
 
 interface Holiday {
@@ -55,6 +57,7 @@ export class DayTracker extends React.Component<
       times: [],
       dirty: false,
       redirect: null,
+      expired: false,
     };
   }
 
@@ -71,6 +74,8 @@ export class DayTracker extends React.Component<
         return msg;
       }
     };
+
+    this.props.workTimeClient.addExpiredCallback(() => this.setState({expired: true}));
   }
 
   private async loadHolidays() {
@@ -331,6 +336,10 @@ export class DayTracker extends React.Component<
           edit={this.state.selectedTimeId != null}
           onDelete={this.deleteTime.bind(this)}
           onDialogClose={this.onDialogClose.bind(this)}
+        />
+        <SessionExpired
+          open={this.state.expired}
+          handleClose={() => this.setState({expired: false})}
         />
       </div>
     );
