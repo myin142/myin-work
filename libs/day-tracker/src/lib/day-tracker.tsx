@@ -31,6 +31,7 @@ export interface DayTrackerState {
   dirty: boolean;
   redirect: string;
   expired: boolean;
+  loading: boolean;
 }
 
 interface Holiday {
@@ -58,6 +59,7 @@ export class DayTracker extends React.Component<
       dirty: false,
       redirect: null,
       expired: false,
+      loading: false,
     };
   }
 
@@ -131,18 +133,22 @@ export class DayTracker extends React.Component<
   }
 
   private async reloadTimesForDay(dates: Date[]) {
+    this.setState({
+      loading: true,
+    })
+
     // Currently only support 2 items
     const interval = Interval.fromDateTimes(dates[0], dates[1]);
     const ev = await this.calendarSource(dates);
     const holidays = this.getHolidayEvents(interval);
     ev.push(...holidays);
-    ev;
 
     this.calendar.removeAllEvents();
     ev.forEach((e) => this.calendar.addEvent(e));
 
     this.setState({
       dirty: false,
+      loading: false,
     });
   }
 
@@ -272,6 +278,8 @@ export class DayTracker extends React.Component<
   }
 
   private footerButtons(): string {
+    if (this.state.loading) return '';
+
     let buttons = [];
     if (!this.state.dirty) {
       buttons.push('export');
@@ -311,7 +319,7 @@ export class DayTracker extends React.Component<
             right: 'timeGridWeek,timeGridDay',
           }}
           footerToolbar={{
-            left: this.state.dirty ? 'save' : '',
+            left: this.state.dirty && !this.state.loading ? 'save' : '',
             right: this.footerButtons(),
           }}
           initialView="timeGridDay"
