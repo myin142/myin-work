@@ -2,6 +2,8 @@ import { DateTime, Duration, Interval } from 'luxon';
 import { TimeSegment, WorkTime } from '@myin-work/cloud-shared';
 
 export class TimeUtils {
+  public static SUMMARY_BREAK_ID = 'BREAK';
+
   static timeToDate(time: string, date = new Date()): Date {
     if (time == null) return null;
     let dateTime = DateTime.fromFormat(time, 'HH:mm');
@@ -93,4 +95,48 @@ export class TimeUtils {
   static sumOfDurations(times: Duration[]): Duration {
     return times.reduce((d1, d2) => d1.plus(d2), Duration.fromMillis(0));
   }
+
+  static getSummaryOfTimes(times: TimeSegment[]): TimeSummary[] {
+    const summary: TimeSummary[] = [];
+    for (const time of times) {
+      let duration = TimeUtils.getDuration(time);
+
+      TimeUtils.findOverlappingIntersections(time, times).forEach(
+        (i) => {
+          duration = duration.minus(i.toDuration());
+        }
+      );
+
+      const name = time.break ? this.SUMMARY_BREAK_ID : time.name;
+      const existing = summary.find(s => s.name === name);
+      if (existing) {
+        existing.duration = existing.duration.plus(duration);
+        if (time.comment) {
+          existing.comments.push(time.comment);
+        }
+      } else {
+        const comments = time.comment ? [time.comment] : [];
+        const obj: TimeSummary = {
+          name,
+          comments,
+          duration,
+        };
+
+        if (time.break) {
+          obj.break = true;
+        }
+
+        summary.push(obj);
+      }
+    }
+
+    return summary;
+  }
+}
+
+export interface TimeSummary {
+  name: string;
+  comments: string[];
+  duration: Duration;
+  break?: boolean;
 }
