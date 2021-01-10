@@ -77,7 +77,9 @@ export class DayTracker extends React.Component<
       }
     };
 
-    this.props.workTimeClient.addExpiredCallback(() => this.setState({expired: true}));
+    this.props.workTimeClient.addExpiredCallback(() =>
+      this.setState({ expired: true })
+    );
   }
 
   private async loadHolidays() {
@@ -85,7 +87,7 @@ export class DayTracker extends React.Component<
     const savedYear = parseInt(
       localStorage.getItem(DayTracker.HOLIDAY_YEAR_KEY)
     );
-    if (currentYear != savedYear) {
+    if (currentYear !== savedYear) {
       const response = await fetch(
         `https://holidays.abstractapi.com/v1/?api_key=50b53820a2154b05b2b0d977080fd472&country=AT&year=${currentYear}`
       );
@@ -117,7 +119,7 @@ export class DayTracker extends React.Component<
   }
 
   private get holidays(): Holiday[] {
-    return JSON.parse(localStorage.getItem(DayTracker.HOLIDAY_KEY));
+    return JSON.parse(localStorage.getItem(DayTracker.HOLIDAY_KEY)) || [];
   }
 
   private get calendar(): CalendarApi {
@@ -135,7 +137,7 @@ export class DayTracker extends React.Component<
   private async reloadTimesForDay(dates: Date[]) {
     this.setState({
       loading: true,
-    })
+    });
 
     // Currently only support 2 items
     const interval = Interval.fromDateTimes(dates[0], dates[1]);
@@ -153,7 +155,7 @@ export class DayTracker extends React.Component<
   }
 
   private async calendarSource(dates: Date[]): Promise<EventInput[]> {
-    var dateStr = dates.map((d) => DateTime.fromJSDate(d).toISODate());
+    const dateStr = dates.map((d) => DateTime.fromJSDate(d).toISODate());
     const workTime = await this.fetchTimesForDate(dateStr);
     return workTime
       .map((work) => {
@@ -169,7 +171,9 @@ export class DayTracker extends React.Component<
     try {
       const workTime = await this.props.workTimeClient.getTimeOfDay(dates);
       return workTime || [];
-    } catch (e) {}
+    } catch (e) {
+      console.warn('Failed to fetch work times', e);
+    }
     return [];
   }
 
@@ -280,7 +284,7 @@ export class DayTracker extends React.Component<
   private footerButtons(): string {
     if (this.state.loading) return '';
 
-    let buttons = [];
+    const buttons = [];
     if (!this.state.dirty) {
       buttons.push('export');
     }
@@ -347,7 +351,7 @@ export class DayTracker extends React.Component<
         />
         <SessionExpired
           open={this.state.expired}
-          handleClose={() => this.setState({expired: false})}
+          handleClose={() => this.setState({ expired: false })}
         />
       </div>
     );

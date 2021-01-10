@@ -101,14 +101,12 @@ export class TimeUtils {
     for (const time of times) {
       let duration = TimeUtils.getDuration(time);
 
-      TimeUtils.findOverlappingIntersections(time, times).forEach(
-        (i) => {
-          duration = duration.minus(i.toDuration());
-        }
-      );
+      TimeUtils.findOverlappingIntersections(time, times).forEach((i) => {
+        duration = duration.minus(i.toDuration());
+      });
 
       const name = time.break ? this.SUMMARY_BREAK_ID : time.name;
-      const existing = summary.find(s => s.name === name);
+      const existing = summary.find((s) => s.name === name);
       if (existing) {
         existing.duration = existing.duration.plus(duration);
         if (time.comment) {
