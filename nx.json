@@ -49,6 +49,9 @@
     },
     "exporter": {
       "tags": []
+    },
+    "openapi": {
+      "tags": []
     }
   }
 }

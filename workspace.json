@@ -308,6 +308,32 @@
           }
         }
       }
+    },
+    "openapi": {
+      "root": "libs/openapi",
+      "sourceRoot": "libs/openapi/src",
+      "projectType": "library",
+      "schematics": {},
+      "architect": {
+        "lint": {
+          "builder": "@nrwl/linter:lint",
+          "options": {
+            "linter": "eslint",
+            "tsConfig": [
+              "libs/openapi/tsconfig.lib.json",
+              "libs/openapi/tsconfig.spec.json"
+            ],
+            "exclude": ["**/node_modules/**", "!libs/openapi/**/*"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "libs/openapi/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
     }
   },
   "cli": {

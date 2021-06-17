@@ -21,7 +21,8 @@
       "@myin-work/work-time-client": ["libs/work-time-client/src/index.ts"],
       "@myin-work/day-tracker": ["libs/day-tracker/src/index.ts"],
       "@myin-work/time-utils": ["libs/time-utils/src/index.ts"],
-      "@myin-work/exporter": ["libs/exporter/src/index.ts"]
+      "@myin-work/exporter": ["libs/exporter/src/index.ts"],
+      "@myin-work/openapi": ["libs/openapi/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

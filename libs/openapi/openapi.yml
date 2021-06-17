@@ -1,0 +1,587 @@
+openapi: 3.0.2
+info:
+    title: Time Booking
+    version: 1.0.0
+    description: Time Booking hooray!
+    contact:
+        name: Jason Ant
+paths:
+    /time-booking:
+        get:
+            parameters:
+                -
+                    name: from
+                    description: ''
+                    schema:
+                        format: date
+                        type: string
+                    in: query
+                    required: true
+                -
+                    name: to
+                    description: ''
+                    schema:
+                        format: date
+                        type: string
+                    in: query
+                    required: true
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GETTimeBookingResponse'
+                    description: Successful
+                '400':
+                    $ref: '#/components/responses/ErrorResponse'
+            description: Get Time bookings for specified time span
+        post:
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/TimeSpanWithoutID'
+                required: true
+            responses:
+                '201':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/TimeSpanWithID'
+                    description: Successful
+                '400':
+                    $ref: '#/components/responses/ErrorResponse'
+    /project-time-booking:
+        get:
+            parameters:
+                -
+                    name: from
+                    description: ''
+                    schema:
+                        format: date
+                        type: string
+                    in: query
+                    required: true
+                -
+                    name: to
+                    description: ''
+                    schema:
+                        format: date
+                        type: string
+                    in: query
+                    required: true
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GETProjectTimeSpansResponse'
+                    description: Successful
+                '400':
+                    $ref: '#/components/responses/ErrorResponse'
+                '404':
+                    description: Project not found
+        put:
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/ProjectDateTimeSpans'
+                required: true
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ProjectDateTimeSpans'
+                    description: Success
+                '400':
+                    $ref: '#/components/responses/ErrorResponse'
+        post:
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/ProjectDateTimeSpans'
+                required: true
+            responses:
+                '201':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ProjectDateTimeSpans'
+                    description: Successful
+                '400':
+                    $ref: '#/components/responses/ErrorResponse'
+                '403':
+                    $ref: '#/components/responses/ErrorResponse'
+        delete:
+            parameters:
+                -
+                    name: day
+                    description: ''
+                    schema:
+                        format: date
+                        type: string
+                    in: query
+                    required: true
+                -
+                    name: project
+                    description: ''
+                    schema:
+                        format: int64
+                        type: integer
+                    in: query
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/DELETEProjectTimeBookingResponse'
+                    description: Successful
+                '400':
+                    $ref: '#/components/responses/ErrorResponse'
+                '403':
+                    $ref: '#/components/responses/ErrorResponse'
+    '/time-booking/{timeSpanId}':
+        get:
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/TimeSpanWithID'
+                    description: Successful
+                '403':
+                    $ref: '#/components/responses/ErrorResponse'
+                '404':
+                    description: TimeSpanId not found
+        put:
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/TimeSpanWithoutID'
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/TimeSpanWithID'
+                    description: Succesful
+                '304':
+                    description: Not modified
+                '400':
+                    $ref: '#/components/responses/ErrorResponse'
+                '403':
+                    $ref: '#/components/responses/ErrorResponse'
+                '404':
+                    description: TimeSpanId not found
+        delete:
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/TimeSpanWithID'
+                    description: gelÃ¶scht
+                '403':
+                    $ref: '#/components/responses/ErrorResponse'
+                '404':
+                    description: TimeSpanId not found
+        parameters:
+            -
+                name: timeSpanId
+                schema:
+                    format: int64
+                    type: integer
+                in: path
+                required: true
+    /project-time-booking/not-booked:
+        get:
+            parameters:
+                -
+                    name: from
+                    description: ''
+                    schema:
+                        format: date
+                        type: string
+                    in: query
+                    required: true
+                -
+                    name: to
+                    description: ''
+                    schema:
+                        format: date
+                        type: string
+                    in: query
+                    required: true
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GETNotBookedTimeResponse'
+                    description: Successful
+    /project:
+        get:
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GETProjectResponse'
+                    description: Successful
+            summary: Get all available Projects to book time on for the current user
+    /time-booking/commit:
+        patch:
+            parameters:
+                -
+                    name: boss
+                    description: ''
+                    schema:
+                        type: boolean
+                    in: query
+                -
+                    name: withdraw
+                    description: ''
+                    schema:
+                        type: boolean
+                    in: query
+                -
+                    name: from
+                    description: ''
+                    schema:
+                        format: date
+                        type: string
+                    in: query
+                    required: true
+                -
+                    name: to
+                    description: ''
+                    schema:
+                        format: date
+                        type: string
+                    in: query
+                    required: true
+                -
+                    name: employee
+                    description: ''
+                    schema:
+                        format: int64
+                        type: integer
+                    in: query
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/PatchTimeBookingCommitResponse'
+                    description: Successful
+                '400':
+                    $ref: '#/components/responses/ErrorResponse'
+                '403':
+                    $ref: '#/components/responses/ErrorResponse'
+components:
+    schemas:
+        TimeSpanWithID:
+            description: ''
+            type: object
+            allOf:
+                -
+                    required:
+                        - id
+                    type: object
+                    properties:
+                        userlock:
+                            description: ''
+                            type: boolean
+                        bosslock:
+                            description: ''
+                            type: boolean
+                        id:
+                            format: int64
+                            description: ''
+                            type: integer
+                -
+                    $ref: '#/components/schemas/TimeSpanWithoutID'
+        TimeSpanTypeEnum:
+            description: ''
+            enum:
+                - WORK
+                - FULL_DAY_VACATION
+                - HALF_DAY_VACATION
+                - SICK_LEAVE
+                - BREAK
+            type: string
+        NotBookedTimePeriod:
+            description: ''
+            required:
+                - date
+                - timePeriods
+            type: object
+            properties:
+                date:
+                    format: date
+                    description: ''
+                    type: string
+                timePeriods:
+                    description: ''
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/TimePeriod'
+        GETProjectResponse:
+            description: ''
+            type: object
+            properties:
+                projects:
+                    description: ''
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/ProjectNameIDMap'
+        GETProjectTimeSpansResponse:
+            description: ''
+            type: object
+            properties:
+                projectTimeSpans:
+                    description: ''
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/ProjectDateTimeSpans'
+        GETTimeBookingResponse:
+            description: ''
+            type: object
+            properties:
+                timeSpans:
+                    description: ''
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/TimeSpanWithID'
+        GETNotBookedTimeResponse:
+            description: ''
+            required:
+                - timePeriods
+            type: object
+            properties:
+                timePeriods:
+                    description: ''
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/NotBookedTimePeriod'
+        ProjectTimeSpan:
+            description: ''
+            required:
+                - from
+                - to
+            type: object
+            properties:
+                from:
+                    $ref: '#/components/schemas/Time'
+                    description: ''
+                to:
+                    $ref: '#/components/schemas/Time'
+                    description: ''
+        ProjectDateTimeSpans:
+            description: ''
+            required:
+                - date
+                - project
+                - timeSpans
+            type: object
+            properties:
+                date:
+                    format: date
+                    description: ''
+                    type: string
+                project:
+                    $ref: '#/components/schemas/ProjectID'
+                    description: ''
+                timeSpans:
+                    description: ''
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/ProjectTimeSpan'
+                userlock:
+                    description: ''
+                    type: boolean
+                bosslock:
+                    description: ''
+                    type: boolean
+        TimeSpanWithoutID:
+            description: ''
+            required:
+                - date
+                - type
+                - homeoffice
+            type: object
+            properties:
+                date:
+                    format: date
+                    description: ''
+                    type: string
+                type:
+                    $ref: '#/components/schemas/TimeSpanTypeEnum'
+                    description: ''
+                to:
+                    $ref: '#/components/schemas/Time'
+                    description: ''
+                from:
+                    $ref: '#/components/schemas/Time'
+                    description: ''
+                homeoffice:
+                    description: ''
+                    type: boolean
+        PUTTimeBookingRequest:
+            description: ''
+            type: object
+            properties:
+                timeSpans:
+                    description: ''
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/PUTTimeBookingTimeSpan'
+        PUTTimeBookingTimeSpan:
+            description: ''
+            required:
+                - id
+                - type
+            type: object
+            properties:
+                type:
+                    $ref: '#/components/schemas/TimeSpanTypeEnum'
+                    description: ''
+                date:
+                    format: date
+                    description: ''
+                    type: string
+                to:
+                    $ref: '#/components/schemas/Time'
+                    description: ''
+                from:
+                    $ref: '#/components/schemas/Time'
+                    description: ''
+                id:
+                    format: int64
+                    description: ''
+                    type: integer
+        ProjectID:
+            format: int64
+            description: ''
+            type: integer
+        ProjectNameIDMap:
+            description: ''
+            type: object
+            properties:
+                projectId:
+                    $ref: '#/components/schemas/ProjectID'
+                    description: ''
+                projectName:
+                    description: ''
+                    type: string
+        DELETEProjectTimeBookingResponse:
+            description: ''
+            type: object
+            properties:
+                projectTimeSpans:
+                    description: ''
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/ProjectDateTimeSpans'
+        ErrorCodeEnum:
+            description: ''
+            enum:
+                - EXISTING_PROJECT_BOOKINGS
+                - OVERLAPPING_TIME
+                - TIME_OUT_OF_BOUNDS
+                - TIME_LIMIT_EXCEEDED
+                - ILLEGAL_TIME_BOUNDS
+                - UNBOOKED_TIME
+                - OPERATION_NOT_PERMITTED
+                - ILLEGAL_DATE
+                - VALIDATION_ERROR
+                - EXISTING_VACATION
+                - EXISTING_SICK_LEAVE
+                - EXISTING_TIME_BOOKING_ENTRIES
+                - USER_LOCKED
+                - BOSS_LOCKED
+                - PROJECT_NOT_FOUND
+            type: string
+        Time:
+            description: 'Time Format in a 00:00 - 23:45 range, in 15 min units'
+            pattern: '^([01][0-9]|2[0-3]):(15|30|45|00)$'
+            type: string
+            example: '15:30'
+        TimeBookingError:
+            description: ''
+            required:
+                - code
+            type: object
+            properties:
+                message:
+                    description: ''
+                    type: string
+                code:
+                    $ref: '#/components/schemas/ErrorCodeEnum'
+                    description: ''
+        TimePeriod:
+            description: ''
+            required:
+                - from
+                - to
+            type: object
+            properties:
+                from:
+                    $ref: '#/components/schemas/Time'
+                    description: ''
+                to:
+                    $ref: '#/components/schemas/Time'
+                    description: ''
+        PatchTimeBookingCommitResponse:
+            description: ''
+            required:
+                - locks
+            type: object
+            properties:
+                locks:
+                    description: ''
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/TimeBookingLockDate'
+        TimeBookingLockDate:
+            description: ''
+            required:
+                - userlock
+                - bosslock
+                - date
+                - employee
+            type: object
+            properties:
+                userlock:
+                    description: ''
+                    type: boolean
+                bosslock:
+                    description: ''
+                    type: boolean
+                date:
+                    format: date
+                    description: ''
+                    type: string
+                employee:
+                    format: int64
+                    description: ''
+                    type: integer
+    responses:
+        ErrorResponse:
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/TimeBookingError'
+            description: An error occured.
+    securitySchemes:
+        ApiKey:
+            type: apiKey
+            name: Authorization
+            in: header
+security:
+    -
+        ApiKey: []
