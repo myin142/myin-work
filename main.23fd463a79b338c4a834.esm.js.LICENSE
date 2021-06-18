@@ -1,11 +1,3 @@
-/*!
- * JavaScript Cookie v2.2.1
- * https://github.com/js-cookie/js-cookie
- *
- * Copyright 2006, 2015 Klaus Hartl & Fagner Brack
- * Released under the MIT license
- */
-
 /** @license React v16.13.1
  * react.production.min.js
  *
@@ -31,23 +23,6 @@
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
- */
-
-/*!
- * Copyright 2016 Amazon.com,
- * Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Amazon Software License (the "License").
- * You may not use this file except in compliance with the
- * License. A copy of the License is located at
- *
- *     http://aws.amazon.com/asl/
- *
- * or in the "license" file accompanying this file. This file is
- * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, express or implied. See the License
- * for the specific language governing permissions and
- * limitations under the License.
  */
 
 /*!
@@ -98,13 +73,6 @@ Docs & License: https://fullcalendar.io/
  * @license MIT
  */
 
-/*!
- * The buffer module from node.js, for the browser.
- *
- * @author   Feross Aboukhadijeh <feross@feross.org> <http://feross.org>
- * @license  MIT
- */
-
 /** @license React v16.13.1
  * react-dom.production.min.js
  *
@@ -114,4 +82,4 @@ Docs & License: https://fullcalendar.io/
  * LICENSE file in the root directory of this source tree.
  */
 
-/*! For license information please see main.a93e6b85e20afe7b7d24.esm.js.LICENSE */
+/*! For license information please see main.23fd463a79b338c4a834.esm.js.LICENSE */
