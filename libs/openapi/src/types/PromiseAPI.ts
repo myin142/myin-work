@@ -45,8 +45,8 @@ export class PromiseDefaultApi {
     }
 
     /**
-     * @param day 
-     * @param project 
+     * @param day
+     * @param project
      */
     public projectTimeBookingDelete(day: string, project?: number, options?: Configuration): Promise<DELETEProjectTimeBookingResponse> {
         const result = this.api.projectTimeBookingDelete(day, project, options);
@@ -54,8 +54,8 @@ export class PromiseDefaultApi {
     }
 
     /**
-     * @param from 
-     * @param to 
+     * @param from
+     * @param to
      */
     public projectTimeBookingGet(from: string, to: string, options?: Configuration): Promise<GETProjectTimeSpansResponse> {
         const result = this.api.projectTimeBookingGet(from, to, options);
@@ -63,8 +63,8 @@ export class PromiseDefaultApi {
     }
 
     /**
-     * @param from 
-     * @param to 
+     * @param from
+     * @param to
      */
     public projectTimeBookingNotBookedGet(from: string, to: string, options?: Configuration): Promise<GETNotBookedTimeResponse> {
         const result = this.api.projectTimeBookingNotBookedGet(from, to, options);
@@ -72,7 +72,7 @@ export class PromiseDefaultApi {
     }
 
     /**
-     * @param projectDateTimeSpans 
+     * @param projectDateTimeSpans
      */
     public projectTimeBookingPost(projectDateTimeSpans: ProjectDateTimeSpans, options?: Configuration): Promise<ProjectDateTimeSpans> {
         const result = this.api.projectTimeBookingPost(projectDateTimeSpans, options);
@@ -80,7 +80,7 @@ export class PromiseDefaultApi {
     }
 
     /**
-     * @param projectDateTimeSpans 
+     * @param projectDateTimeSpans
      */
     public projectTimeBookingPut(projectDateTimeSpans: ProjectDateTimeSpans, options?: Configuration): Promise<ProjectDateTimeSpans> {
         const result = this.api.projectTimeBookingPut(projectDateTimeSpans, options);
@@ -88,11 +88,11 @@ export class PromiseDefaultApi {
     }
 
     /**
-     * @param from 
-     * @param to 
-     * @param boss 
-     * @param withdraw 
-     * @param employee 
+     * @param from
+     * @param to
+     * @param boss
+     * @param withdraw
+     * @param employee
      */
     public timeBookingCommitPatch(from: string, to: string, boss?: boolean, withdraw?: boolean, employee?: number, options?: Configuration): Promise<PatchTimeBookingCommitResponse> {
         const result = this.api.timeBookingCommitPatch(from, to, boss, withdraw, employee, options);
@@ -101,8 +101,8 @@ export class PromiseDefaultApi {
 
     /**
      * Get Time bookings for specified time span
-     * @param from 
-     * @param to 
+     * @param from
+     * @param to
      */
     public timeBookingGet(from: string, to: string, options?: Configuration): Promise<GETTimeBookingResponse> {
         const result = this.api.timeBookingGet(from, to, options);
@@ -110,7 +110,7 @@ export class PromiseDefaultApi {
     }
 
     /**
-     * @param timeSpanWithoutID 
+     * @param timeSpanWithoutID
      */
     public timeBookingPost(timeSpanWithoutID: TimeSpanWithoutID, options?: Configuration): Promise<TimeSpanWithID> {
         const result = this.api.timeBookingPost(timeSpanWithoutID, options);
@@ -118,7 +118,7 @@ export class PromiseDefaultApi {
     }
 
     /**
-     * @param timeSpanId 
+     * @param timeSpanId
      */
     public timeBookingTimeSpanIdDelete(timeSpanId: number, options?: Configuration): Promise<TimeSpanWithID> {
         const result = this.api.timeBookingTimeSpanIdDelete(timeSpanId, options);
@@ -126,7 +126,7 @@ export class PromiseDefaultApi {
     }
 
     /**
-     * @param timeSpanId 
+     * @param timeSpanId
      */
     public timeBookingTimeSpanIdGet(timeSpanId: number, options?: Configuration): Promise<TimeSpanWithID> {
         const result = this.api.timeBookingTimeSpanIdGet(timeSpanId, options);
@@ -134,8 +134,8 @@ export class PromiseDefaultApi {
     }
 
     /**
-     * @param timeSpanId 
-     * @param timeSpanWithoutID 
+     * @param timeSpanId
+     * @param timeSpanWithoutID
      */
     public timeBookingTimeSpanIdPut(timeSpanId: number, timeSpanWithoutID?: TimeSpanWithoutID, options?: Configuration): Promise<TimeSpanWithID> {
         const result = this.api.timeBookingTimeSpanIdPut(timeSpanId, timeSpanWithoutID, options);

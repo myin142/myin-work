@@ -7,9 +7,12 @@ import {
   DialogContent,
   DialogTitle,
   FormControlLabel,
+  MenuItem,
+  Select,
   TextField,
 } from '@material-ui/core';
-import { TimeSegment } from '@myin-work/work-time-client';
+import { ProjectNameIDMap } from '@myin-work/openapi';
+import { TimeSegment, WorkTimeClient } from '@myin-work/work-time-client';
 import React from 'react';
 
 import './day-time-dialog.scss';
@@ -19,18 +22,19 @@ export interface DayTimeDialogProps {
   edit: boolean;
   onDialogClose: (time: TimeSegment) => void;
   onDelete: () => void;
+  workTimeClient: WorkTimeClient;
 }
 
 export interface DayTimeDialogState {
-  name: string;
-  comment: string;
   break: boolean;
+  selectedProject: number;
+  projects: ProjectNameIDMap[];
 }
 
 export class DayTimeDialog extends React.Component<
   DayTimeDialogProps,
   DayTimeDialogState
-> {
+  > {
   constructor(props) {
     super(props);
     this.state = this.defaultState;
@@ -38,20 +42,10 @@ export class DayTimeDialog extends React.Component<
 
   private get defaultState(): DayTimeDialogState {
     return {
-      name: '',
-      comment: '',
       break: false,
+      selectedProject: 0,
+      projects: [],
     };
-  }
-
-  private updateName(ev: React.ChangeEvent<HTMLInputElement>) {
-    const value = ev.target.value;
-    this.setState({ name: value });
-  }
-
-  private updateComment(ev: React.ChangeEvent<HTMLInputElement>) {
-    const value = ev.target.value;
-    this.setState({ comment: value });
   }
 
   private updateBreak(ev: React.ChangeEvent<HTMLInputElement>) {
@@ -82,13 +76,22 @@ export class DayTimeDialog extends React.Component<
 
   private syncPropsToState() {
     this.setState({
-      name: this.props.time.name || '',
-      comment: this.props.time.comment || '',
+      selectedProject: this.props.time.projectId || 0,
       break: this.props.time.break || false,
     });
   }
 
+  async componentDidMount() {
+    const projects = await this.props.workTimeClient.getProjects();
+    this.setState({ projects });
+  }
+
   render() {
+    const { projects, selectedProject } = this.state;
+
+    const projectSelects = projects
+      .map(proj => <MenuItem value={proj.projectId}>{proj.projectName}</MenuItem>);
+
     return (
       <Dialog
         onClose={() => this.doClose(null)}
@@ -98,16 +101,10 @@ export class DayTimeDialog extends React.Component<
         <DialogTitle>Edit Time</DialogTitle>
         <DialogContent>
           <Box display="flex" flexDirection="column">
-            <TextField
-              label="Name"
-              value={this.state.name}
-              onChange={this.updateName.bind(this)}
-            />
-            <TextField
-              label="Comment"
-              value={this.state.comment}
-              onChange={this.updateComment.bind(this)}
-            />
+            {projects.length > 0 &&
+              <Select value={selectedProject} onChange={e => this.setState({ selectedProject: e.target.value as number })} >
+                {projectSelects}
+              </Select>}
             <FormControlLabel
               control={
                 <Checkbox

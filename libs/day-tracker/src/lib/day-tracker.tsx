@@ -343,6 +343,7 @@ export class DayTracker extends React.Component<
           edit={this.state.selectedTimeId != null}
           onDelete={this.deleteTime.bind(this)}
           onDialogClose={this.onDialogClose.bind(this)}
+          workTimeClient={this.props.workTimeClient}
         />
         <SessionExpired
           open={this.state.expired}
