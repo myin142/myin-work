@@ -52,6 +52,9 @@
     },
     "openapi": {
       "tags": []
+    },
+    "login": {
+      "tags": []
     }
   }
 }
