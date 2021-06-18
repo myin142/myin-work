@@ -29,15 +29,6 @@
       "tags": [],
       "implicitDependencies": ["work-tracker"]
     },
-    "cloud": {
-      "tags": []
-    },
-    "daily-time": {
-      "tags": []
-    },
-    "cloud-shared": {
-      "tags": []
-    },
     "work-time-client": {
       "tags": []
     },

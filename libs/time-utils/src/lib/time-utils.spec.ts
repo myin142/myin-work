@@ -1,6 +1,6 @@
 import { TimeSummary, TimeUtils } from './time-utils';
 import { DateTime, Duration } from 'luxon';
-import { TimeSegment } from '@myin-work/cloud-shared';
+import { TimeSegment } from '@myin-work/work-time-client';
 
 describe('Time Utils', () => {
   it('date to time', () => {

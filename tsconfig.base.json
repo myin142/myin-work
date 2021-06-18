@@ -16,8 +16,6 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@myin-work/daily-time": ["libs/daily-time/src/index.ts"],
-      "@myin-work/cloud-shared": ["libs/cloud-shared/src/index.ts"],
       "@myin-work/work-time-client": ["libs/work-time-client/src/index.ts"],
       "@myin-work/day-tracker": ["libs/day-tracker/src/index.ts"],
       "@myin-work/time-utils": ["libs/time-utils/src/index.ts"],

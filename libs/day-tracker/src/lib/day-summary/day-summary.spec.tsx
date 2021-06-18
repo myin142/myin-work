@@ -2,7 +2,7 @@ import React from 'react';
 import { render } from '@testing-library/react';
 
 import DaySummary from './day-summary';
-import { TimeSegment } from '@myin-work/cloud-shared';
+import { TimeSegment } from '@myin-work/work-time-client';
 
 describe('DaySummary', () => {
   it('should subtract inner times', () => {

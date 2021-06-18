@@ -1,4 +1,4 @@
-import { WorkTimeClient } from '@myin-work/work-time-client';
+import { WorkTimeClient, TimeSegment, WorkTime } from '@myin-work/work-time-client';
 import { Redirect } from 'react-router-dom';
 import { DateTime, Interval } from 'luxon';
 import React, { RefObject } from 'react';
@@ -14,7 +14,6 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 
 import './day-tracker.scss';
-import { TimeSegment, WorkTime } from '@myin-work/cloud-shared';
 import DayTimeDialog from './day-time-dialog/day-time-dialog';
 import DaySummary from './day-summary/day-summary';
 import { TimeUtils } from '@myin-work/time-utils';
@@ -76,10 +75,6 @@ export class DayTracker extends React.Component<
         return msg;
       }
     };
-
-    this.props.workTimeClient.addExpiredCallback(() =>
-      this.setState({ expired: true })
-    );
   }
 
   private async loadHolidays() {

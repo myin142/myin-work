@@ -1,7 +1,5 @@
 import {
-  Button,
   Dialog,
-  DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
@@ -10,7 +8,7 @@ import {
   ListItemText,
   Typography,
 } from '@material-ui/core';
-import { TimeSegment } from '@myin-work/cloud-shared';
+import { TimeSegment } from '@myin-work/work-time-client';
 import React from 'react';
 import './day-summary.scss';
 import { TimeSummary, TimeUtils } from '@myin-work/time-utils';

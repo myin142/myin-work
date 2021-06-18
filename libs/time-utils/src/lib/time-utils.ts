@@ -1,5 +1,5 @@
 import { DateTime, Duration, Interval } from 'luxon';
-import { TimeSegment, WorkTime } from '@myin-work/cloud-shared';
+import { TimeSegment, WorkTime } from '@myin-work/work-time-client';
 
 export class TimeUtils {
   public static SUMMARY_BREAK_ID = 'BREAK';
